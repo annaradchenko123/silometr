@@ -64,14 +64,14 @@
             background-repeat: no-repeat;
         }
 
-        /* ПЛАШКА ДЛЯ ОЧКОВ (Поднята выше, чтобы закрыть лампочки) */
+        /* ПЛАШКА ДЛЯ ОЧКОВ (Увеличена и опущена чуть ниже) */
         #score-wrapper {
             position: absolute;
-            top: -8%; /* Поднято наверх за пределы автомата */
+            top: -3%; /* Опустили вниз (было -8%) */
             left: 50%;
             transform: translateX(-50%);
-            width: 240px;  
-            height: 110px; 
+            width: 280px;  /* Увеличили размер (было 240px) */
+            height: 130px; /* Увеличили высоту (было 110px) */
             background-image: url('https://i.postimg.cc/RhM2zKxn/11_(14).png');
             background-size: contain;
             background-position: center;
@@ -84,12 +84,12 @@
 
         /* Сами цифры очков */
         #score-display {
-            color: #ffd700; /* Золотисто-желтый цвет */
+            color: #ffd700; 
             font-weight: 900;
-            font-size: 2.4rem; 
+            font-size: 2.8rem; /* Немного увеличили шрифт под новую плашку */
             text-shadow: 0 3px 6px rgba(0,0,0,0.8); 
             transition: transform 0.2s;
-            margin-top: -5px; 
+            margin-top: -6px; 
         }
         .score-anim { transform: scale(1.3); color: #fff !important; }
 
@@ -105,21 +105,21 @@
             z-index: 5;
         }
 
-        /* КРУГЛЫЙ МИНИАТЮРНЫЙ КУРСОР (Цвет золотистый под очки) */
+        /* КРУГЛЫЙ МИНИАТЮРНЫЙ КУРСОР (#ffd700) */
         #slider {
             position: absolute;
             box-sizing: border-box;
             width: 24px;       
             height: 24px;      
             left: -7px;        
-            background: #ffd700; /* Цвет мэтчится с очками */
+            background: #ffd700; 
             border-radius: 50%; 
             border: 2px solid white;
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.8); 
             z-index: 6;
         }
 
-        /* ЛАЗЕР (Цвет золотистый под очки) */
+        /* ЛАЗЕР (#ffd700) */
         #slider-pointer {
             position: absolute;
             width: 1000px;
@@ -132,11 +132,11 @@
             z-index: 1;
         }
 
-        /* КНОПКА УДАРА (Смещена чуть правее для центровки) */
+        /* КНОПКА УДАРА */
         #hammer-btn {
             position: absolute;
             bottom: 8%; 
-            left: 49.5%; /* Чуть сдвинули вправо (было 48%) */
+            left: 49.5%; 
             transform: translateX(-50%);
             width: 90px;  
             height: 90px; 
