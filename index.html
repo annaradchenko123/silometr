@@ -64,14 +64,14 @@
             background-repeat: no-repeat;
         }
 
-        /* ПЛАШКА ДЛЯ ОЧКОВ (Увеличена в размерах) */
+        /* ПЛАШКА ДЛЯ ОБЩИХ ОЧКОВ НАВЕРХУ */
         #score-wrapper {
             position: absolute;
-            top: 0%; /* На самом верху автомата */
+            top: 0%; 
             left: 50%;
             transform: translateX(-50%);
-            width: 240px;  /* Было 180px, стала шире */
-            height: 110px; /* Было 80px, стала выше */
+            width: 240px;  
+            height: 110px; 
             background-image: url('https://i.postimg.cc/RhM2zKxn/11_(14).png');
             background-size: contain;
             background-position: center;
@@ -82,14 +82,14 @@
             z-index: 10;
         }
 
-        /* Сами цифры очков (Увеличены под размер плашки) */
+        /* ШРИФТ ИТОГОВЫХ ОЧКОВ (УМЕНЬШЕН) */
         #score-display {
             color: #ffd700; 
             font-weight: 900;
-            font-size: 3.8rem; /* Шрифт стал больше (было 2.8rem) */
+            font-size: 2.4rem; /* Уменьшили шрифт, чтобы аккуратно влезал в картинку */
             text-shadow: 0 3px 6px rgba(0,0,0,0.8); 
             transition: transform 0.2s;
-            margin-top: -8px; 
+            margin-top: -5px; 
         }
         .score-anim { transform: scale(1.3); color: #fff !important; }
 
@@ -105,25 +105,25 @@
             z-index: 5;
         }
 
-        /* Ползунок (Новый цвет #f7f3c1) */
+        /* КРУГЛЫЙ МИНИАТЮРНЫЙ КУРСОР (#f7f3c1) */
         #slider {
             position: absolute;
-            width: 50px;       
-            left: -20px;       
+            box-sizing: border-box;
+            width: 24px;       
             height: 24px;      
-            background: #f7f3c1; /* Заданный вами цвет */
-            border-radius: 12px;
+            left: -7px;        
+            background: #f7f3c1; 
+            border-radius: 50%; 
             border: 2px solid white;
-            box-shadow: 0 0 12px rgba(247, 243, 193, 0.8); /* Свечение в цвет курсора */
+            box-shadow: 0 0 10px rgba(247, 243, 193, 0.9); 
             z-index: 6;
         }
 
-        /* Лазер (Новый цвет #f7f3c1) */
+        /* ЛАЗЕР (#f7f3c1) */
         #slider-pointer {
             position: absolute;
             width: 1000px;
             height: 3px; 
-            /* Градиент лазера в новом цвете */
             background: linear-gradient(90deg, rgba(247, 243, 193, 0.8) 0%, rgba(247, 243, 193, 0) 100%); 
             top: 50%;
             left: 100%;
@@ -132,13 +132,13 @@
             z-index: 1;
         }
 
-        /* КНОПКА (Меньше размером и опущена ниже) */
+        /* КНОПКА УДАРА (Смещена влево) */
         #hammer-btn {
             position: absolute;
-            bottom: 8%; /* Опущена по вашей просьбе */
-            left: 50%;
+            bottom: 8%; 
+            left: 48%; /* Смещено влево */
             transform: translateX(-50%);
-            width: 90px;  /* Уменьшена (было 110px) */
+            width: 90px;  
             height: 90px; 
             background-color: transparent;
             background-image: url('https://i.postimg.cc/wM6ndL8Z/11_(13).png');
@@ -191,7 +191,7 @@
             flex-shrink: 0;
         }
 
-        /* Контейнер ответов привязан к шкале */
+        /* Контейнер ответов */
         #answers-container {
             position: absolute;
             left: 20px;
@@ -217,10 +217,18 @@
             box-sizing: border-box;
         }
 
-        /* ФИДБЕК */
+        /* ВСПЛЫВАЮЩИЙ ФИДБЕК ЗА УДАР (Размер шрифта возвращен к крупному) */
         #feedback-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
         #feedback-text { font-size: 5rem; font-weight: 900; text-align: center; text-transform: uppercase; text-shadow: 0 4px 15px rgba(0,0,0,0.4); margin-bottom: 15px; letter-spacing: 2px; }
-        #feedback-points { font-size: 3.5rem; font-weight: 700; background: rgba(255, 255, 255, 0.95); padding: 10px 40px; border-radius: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        
+        #feedback-points { 
+            font-size: 3.5rem; /* Вернул крупный размер для красивого эффекта */
+            font-weight: 700; 
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 10px 40px; 
+            border-radius: 30px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
+        }
 
         /* Финальный экран */
         #final-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 30; display: none; text-align: center; backdrop-filter: blur(5px); }
@@ -248,7 +256,7 @@
                 <div id="slider"><div id="slider-pointer"></div></div>
             </div>
             
-            <!-- Кнопка поверх рисунка -->
+            <!-- Кнопка удара -->
             <button id="hammer-btn" aria-label="Удар молотком"></button>
         </div>
     </div>
@@ -310,7 +318,7 @@
         }
     }
 
-    // КОНФИГУРАЦИЯ (12 вопросов, 3 варианта)
+    // КОНФИГУРАЦИЯ
     const gameConfig = {
         sliderSpeedMultiplier: 1.5,
         points: { perfect: 100, good: 70, wrong: -80, miss: -50 },
@@ -528,7 +536,6 @@
     }
 
     function fireConfetti() {
-        // Конфетти тоже использует новые спокойные тона
         confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, colors: ['#f7f3c1', '#f1c40f', '#2ecc71', '#3498db'] });
     }
 
