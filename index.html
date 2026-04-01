@@ -64,14 +64,14 @@
             background-repeat: no-repeat;
         }
 
-        /* НОВАЯ ПЛАШКА ДЛЯ ОЧКОВ (Картинка) */
+        /* ПЛАШКА ДЛЯ ОЧКОВ (Увеличена в размерах) */
         #score-wrapper {
             position: absolute;
-            top: 1%; /* Располагаем сверху силомера */
+            top: 0%; /* На самом верху автомата */
             left: 50%;
             transform: translateX(-50%);
-            width: 180px;  /* Размер картинки-плашки */
-            height: 80px;
+            width: 240px;  /* Было 180px, стала шире */
+            height: 110px; /* Было 80px, стала выше */
             background-image: url('https://i.postimg.cc/RhM2zKxn/11_(14).png');
             background-size: contain;
             background-position: center;
@@ -82,16 +82,15 @@
             z-index: 10;
         }
 
-        /* Сами цифры очков внутри плашки */
+        /* Сами цифры очков (Увеличены под размер плашки) */
         #score-display {
-            color: #ffd700; /* Золотой цвет */
+            color: #ffd700; 
             font-weight: 900;
-            font-size: 2.8rem;
-            text-shadow: 0 3px 5px rgba(0,0,0,0.8); /* Легкая тень для объема */
+            font-size: 3.8rem; /* Шрифт стал больше (было 2.8rem) */
+            text-shadow: 0 3px 6px rgba(0,0,0,0.8); 
             transition: transform 0.2s;
-            margin-top: -5px; /* Легкая корректировка по центру картинки */
+            margin-top: -8px; 
         }
-        /* Анимация увеличения цифр (плашка не дергается) */
         .score-anim { transform: scale(1.3); color: #fff !important; }
 
         /* НАСТРОЙКА ШКАЛЫ */
@@ -106,25 +105,26 @@
             z-index: 5;
         }
 
-        /* Ползунок */
+        /* Ползунок (Новый цвет #f7f3c1) */
         #slider {
             position: absolute;
             width: 50px;       
             left: -20px;       
             height: 24px;      
-            background: linear-gradient(90deg, #ff7979, #ff9e9e); 
+            background: #f7f3c1; /* Заданный вами цвет */
             border-radius: 12px;
             border: 2px solid white;
-            box-shadow: 0 0 10px rgba(255, 121, 121, 0.6); 
+            box-shadow: 0 0 12px rgba(247, 243, 193, 0.8); /* Свечение в цвет курсора */
             z-index: 6;
         }
 
-        /* Лазер */
+        /* Лазер (Новый цвет #f7f3c1) */
         #slider-pointer {
             position: absolute;
             width: 1000px;
             height: 3px; 
-            background: linear-gradient(90deg, rgba(255, 121, 121, 0.6) 0%, rgba(255, 121, 121, 0) 100%); 
+            /* Градиент лазера в новом цвете */
+            background: linear-gradient(90deg, rgba(247, 243, 193, 0.8) 0%, rgba(247, 243, 193, 0) 100%); 
             top: 50%;
             left: 100%;
             transform: translateY(-50%);
@@ -132,14 +132,14 @@
             z-index: 1;
         }
 
-        /* НОВАЯ КНОПКА (Уменьшена и поднята выше) */
+        /* КНОПКА (Меньше размером и опущена ниже) */
         #hammer-btn {
             position: absolute;
-            bottom: 12%; /* ПОДНЯЛИ ВЫШЕ, чтобы закрыть нарисованную кнопку */
+            bottom: 8%; /* Опущена по вашей просьбе */
             left: 50%;
             transform: translateX(-50%);
-            width: 110px;  /* УМЕНЬШИЛИ НА ТРЕТЬ (было 160) */
-            height: 110px; 
+            width: 90px;  /* Уменьшена (было 110px) */
+            height: 90px; 
             background-color: transparent;
             background-image: url('https://i.postimg.cc/wM6ndL8Z/11_(13).png');
             background-size: contain;
@@ -152,9 +152,7 @@
             outline: none;
             -webkit-tap-highlight-color: transparent;
         }
-        /* Анимация вдавливания */
         #hammer-btn:active { transform: translate(-50%, 8px) scale(0.95); }
-        /* ЧБ эффект */
         #hammer-btn:disabled { filter: grayscale(100%); cursor: not-allowed; opacity: 0.8; }
 
         /* ПРАВАЯ ПАНЕЛЬ */
@@ -193,7 +191,7 @@
             flex-shrink: 0;
         }
 
-        /* Контейнер ответов привязан к шкале (от верха до низа) */
+        /* Контейнер ответов привязан к шкале */
         #answers-container {
             position: absolute;
             left: 20px;
@@ -312,7 +310,7 @@
         }
     }
 
-    // КОНФИГУРАЦИЯ (12 вопросов, 3 варианта, очки по ТЗ)
+    // КОНФИГУРАЦИЯ (12 вопросов, 3 варианта)
     const gameConfig = {
         sliderSpeedMultiplier: 1.5,
         points: { perfect: 100, good: 70, wrong: -80, miss: -50 },
@@ -530,7 +528,8 @@
     }
 
     function fireConfetti() {
-        confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, colors: ['#ff7979', '#f1c40f', '#2ecc71', '#3498db'] });
+        // Конфетти тоже использует новые спокойные тона
+        confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, colors: ['#f7f3c1', '#f1c40f', '#2ecc71', '#3498db'] });
     }
 
     function endGame() {
