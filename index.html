@@ -131,18 +131,16 @@
             90% { transform: translate(2px, 3px) rotate(0deg); }
             100% { transform: translate(0, 0) rotate(0deg); }
         }
-        .shake-effect {
-            animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
-        }
+        .shake-effect { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
 
         /* ПЛАШКА ДЛЯ ОЧКОВ */
         #score-wrapper {
             position: absolute;
-            top: -8%; 
+            top: -3%; 
             left: 50%;
             transform: translateX(-50%);
-            width: 240px;  
-            height: 110px; 
+            width: 280px;  
+            height: 130px; 
             background-image: url('https://i.postimg.cc/RhM2zKxn/11_(14).png');
             background-size: contain;
             background-position: center;
@@ -157,10 +155,10 @@
         #score-display {
             color: #ffd700; 
             font-weight: 900;
-            font-size: 2.4rem; 
+            font-size: 2.8rem; 
             text-shadow: 0 3px 6px rgba(0,0,0,0.8); 
-            transition: transform 0.2s;
-            margin-top: -5px; 
+            transition: transform 0.1s;
+            margin-top: -6px; 
         }
         .score-anim { transform: scale(1.3); color: #fff !important; }
 
@@ -223,6 +221,7 @@
             outline: none;
             -webkit-tap-highlight-color: transparent;
         }
+        /* Вдавливание при клике МЫШКОЙ или ПРОБЕЛОМ */
         #hammer-btn:active, #hammer-btn.pressed { transform: translate(-50%, 8px) scale(0.95); }
         #hammer-btn:disabled { filter: grayscale(100%); cursor: not-allowed; opacity: 0.8; }
 
@@ -286,6 +285,19 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.15);
             z-index: 3;
             box-sizing: border-box;
+            transform-origin: left center; /* Чтобы анимация удара шла слева направо */
+        }
+
+        /* ФИЗИЧЕСКИЙ УДАР ПО КАРТОЧКЕ (Card Smash) */
+        @keyframes cardSmash {
+            0% { transform: translateX(0) scale(1); }
+            20% { transform: translateX(20px) rotate(3deg) scale(0.95); } /* Вдавливается и гнется от удара слева */
+            50% { transform: translateX(-5px) rotate(-1deg) scale(1.02); } /* Отпружинивает обратно */
+            80% { transform: translateX(2px) rotate(1deg) scale(1.05); } 
+            100% { transform: translateX(0) rotate(0deg) scale(1.05); } /* Застывает чуть увеличенной */
+        }
+        .card-smash-anim {
+            animation: cardSmash 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
         }
 
         /* ВСПЛЫВАЮЩИЙ ФИДБЕК ЗА УДАР */
@@ -312,11 +324,6 @@
     </style>
 </head>
 <body>
-
-<!-- АУДИО ФОНОВОЙ МУЗЫКИ (Надежный MP3) -->
-<audio id="bg-music" loop preload="auto" crossorigin="anonymous">
-    <source src="https://freepd.com/music/The%20Entertainer.mp3" type="audio/mpeg">
-</audio>
 
 <div id="game-wrapper">
     <div class="overlay-bg"></div>
@@ -369,10 +376,8 @@
 </div>
 
 <script>
-    // НАСТРОЙКА АУДИО И МУЗЫКИ
+    // НАСТРОЙКА АУДИО (Только эффекты)
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const bgMusic = document.getElementById('bg-music');
-    bgMusic.volume = 0.2; // Громкость фона (20%)
 
     function playSound(type) {
         if(audioCtx.state === 'suspended') audioCtx.resume();
@@ -381,9 +386,6 @@
         osc.connect(gainNode);
         gainNode.connect(audioCtx.destination);
         const now = audioCtx.currentTime;
-        
-        // Приглушаем музыку (Ducking), чтобы было слышно эффекты
-        bgMusic.volume = 0.05;
 
         if (type === 'hit') { 
             osc.type = 'square';
@@ -392,12 +394,6 @@
             gainNode.gain.setValueAtTime(1, now);
             gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
             osc.start(now); osc.stop(now + 0.1);
-            
-            // Если это просто удар (а не результат ответа), возвращаем музыку быстро
-            setTimeout(() => { 
-                if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; 
-            }, 300);
-
         } else if (type === 'success') { 
             osc.type = 'sine';
             osc.frequency.setValueAtTime(440, now);
@@ -406,12 +402,6 @@
             gainNode.gain.setValueAtTime(0.5, now);
             gainNode.gain.linearRampToValueAtTime(0, now + 0.5);
             osc.start(now); osc.stop(now + 0.5);
-            
-            // Возвращаем музыку после фанфар
-            setTimeout(() => { 
-                if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; 
-            }, 1500);
-
         } else if (type === 'error') { 
             osc.type = 'sawtooth';
             osc.frequency.setValueAtTime(200, now);
@@ -419,10 +409,6 @@
             gainNode.gain.setValueAtTime(0.5, now);
             gainNode.gain.linearRampToValueAtTime(0, now + 0.4);
             osc.start(now); osc.stop(now + 0.4);
-
-            setTimeout(() => { 
-                if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; 
-            }, 1000);
         }
     }
 
@@ -492,10 +478,6 @@
     // Запуск по кнопке "НАЧАТЬ"
     ui.startBtn.addEventListener('click', () => {
         if(audioCtx.state === 'suspended') audioCtx.resume();
-        
-        // Включаем музыку безопасно
-        bgMusic.play().catch((e) => console.log("Браузер пока заблокировал музыку:", e));
-        
         ui.startScreen.style.opacity = '0';
         setTimeout(() => {
             ui.startScreen.style.display = 'none';
@@ -522,8 +504,7 @@
     function initGame() {
         currentQuestionIndex = 0;
         score = 0;
-        updateScoreDisplay(0);
-        bgMusic.volume = 0.2;
+        ui.score.innerText = "0";
         ui.finalScreen.style.display = 'none';
         loadQuestion();
     }
@@ -577,7 +558,7 @@
         if(e) e.preventDefault();
         if (!isPlaying) return;
         
-        // ЭФФЕКТ ТРЯСКИ
+        // ТРЯСКА ЭКРАНА
         ui.machine.classList.remove('shake-effect');
         void ui.machine.offsetWidth; 
         ui.machine.classList.add('shake-effect');
@@ -586,11 +567,26 @@
         isPlaying = false;
         cancelAnimationFrame(animationFrameId);
         ui.btn.disabled = true;
+
+        // ВЗРЫВ ИСКР ИЗ ЛАЗЕРА (Impact Sparks)
+        const trackRect = ui.track.getBoundingClientRect();
+        const hitX = (trackRect.left + trackRect.width / 2) / window.innerWidth;
+        const hitY = (trackRect.top + laserY) / window.innerHeight;
+        
+        confetti({
+            particleCount: 60,
+            spread: 80,
+            startVelocity: 35,
+            origin: { x: hitX, y: hitY },
+            colors: ['#ffd700', '#ffffff', '#ff9e9e'],
+            ticks: 100,
+            gravity: 1.5,
+            scalar: 0.8,
+            zIndex: 100
+        });
+
         checkHit();
     }
-
-    ui.btn.addEventListener('mousedown', handleHit);
-    ui.btn.addEventListener('touchstart', handleHit);
 
     function checkHit() {
         const trackRect = ui.track.getBoundingClientRect();
@@ -621,8 +617,10 @@
         let color = "";
 
         const slots = document.querySelectorAll('.answer-slot');
+        
+        // ФИЗИЧЕСКИЙ ОТКЛИК КАРТОЧКИ (Card Smash)
         if (hitIndex !== -1) {
-            slots[hitIndex].style.transform = 'scale(1.05)';
+            slots[hitIndex].classList.add('card-smash-anim');
         }
 
         if (hitIndex === -1) {
@@ -663,12 +661,36 @@
         }, 2000); 
     }
 
+    // АНИМАЦИЯ БЕГУЩЕГО СЧЕТЧИКА (Arcade Score Roll)
+    function animateScore(start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            // Плавное замедление в конце (easeOut)
+            const easeProgress = progress * (2 - progress);
+            const currentScore = Math.floor(start + (end - start) * easeProgress);
+            
+            ui.score.innerText = currentScore;
+            
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                ui.score.innerText = end;
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
     function updateScoreDisplay(points) {
+        const oldScore = score;
         score += points;
         if(score < 0) score = 0; 
-        ui.score.innerText = score;
+        
         if(points !== 0) {
             ui.score.classList.add('score-anim');
+            // Запускаем "накрутку" цифр (длительность 1 секунда = 1000 мс)
+            animateScore(oldScore, score, 1000);
             setTimeout(() => ui.score.classList.remove('score-anim'), 300);
         }
     }
@@ -688,7 +710,6 @@
     }
 
     function endGame() {
-        bgMusic.volume = 0.02; // Музыка затихает в конце
         ui.progBar.style.width = '100%';
         ui.finalScreen.style.display = 'flex';
         ui.finalScore.innerText = score;
