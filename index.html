@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Игра: Силомер</title>
+    <!-- Библиотека для салюта -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        /* Мягкий и аккуратный шрифт Ubuntu */
+        /* Мягкий шрифт Ubuntu */
         @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700;900&display=swap');
 
         body { 
@@ -21,6 +22,7 @@
             user-select: none;
         }
         
+        /* Главный контейнер 16:9 */
         #game-wrapper {
             width: 100%;
             max-width: 1280px; 
@@ -38,11 +40,11 @@
         .overlay-bg {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);
+            background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 100%);
             z-index: 1;
         }
 
-        /* ЛЕВАЯ ПАНЕЛЬ: Автомат-силомер */
+        /* ЛЕВАЯ ПАНЕЛЬ: Силомер */
         #left-panel {
             width: 35%; 
             height: 100%;
@@ -50,67 +52,68 @@
             z-index: 2;
         }
 
-        /* Силомер немного опущен */
+        /* НОВАЯ КАРТИНКА СИЛОМЕРА */
         #silomer-machine {
             position: absolute;
             width: 100%;
-            height: 80%; /* Сделали чуть компактнее, чтобы опустить */
-            bottom: 6%;  /* Опустили ниже */
-            background-image: url('https://i.postimg.cc/L5YGK6LG/11-(10).png');
+            height: 85%;
+            bottom: 5%; 
+            background-image: url('https://i.postimg.cc/85fWQqXv/GG-2-unit-2-3-kopia.png');
             background-size: contain;
             background-position: center bottom;
             background-repeat: no-repeat;
         }
 
-        /* Табло счета поднято на самый верх */
+        /* Табло счета */
         #score-display {
             position: absolute;
-            top: -2%; 
+            top: 2%; 
             left: 50%;
             transform: translateX(-50%);
-            background-color: #111;
+            background-color: rgba(17, 17, 17, 0.9);
             color: #ffd700;
-            padding: 8px 30px;
-            border-radius: 15px;
+            padding: 5px 25px;
+            border-radius: 12px;
             font-weight: 900;
-            font-size: 3rem;
-            border: 4px solid #ff4757;
-            box-shadow: 0 0 15px rgba(255, 71, 87, 0.6), inset 0 0 10px #000;
+            font-size: 2.8rem;
+            border: 3px solid #ff7979;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
             transition: transform 0.2s;
             z-index: 10;
         }
-        .score-anim { transform: translate(-50%, 0) scale(1.2) !important; color: #fff !important; }
+        .score-anim { transform: translate(-50%, 0) scale(1.15) !important; color: #fff !important; }
 
-        /* НАСТРОЙКА ШКАЛЫ (Бегает от верхнего до нижнего ответа) */
+        /* НАСТРОЙКА ШКАЛЫ (Опущена ниже, чтобы освободить верх) */
         #track {
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            top: 25%;      
-            height: 52%;   
+            top: 30%;      /* Опустили начало шкалы */
+            height: 48%;   /* Длина шкалы */
             width: 10px;
-            background: rgba(255, 255, 255, 0.05); 
+            background: rgba(255, 255, 255, 0.05); /* Невидимая направляющая */
             z-index: 5;
         }
 
-        /* Ограничитель (бегунок) */
+        /* Менее агрессивный и уменьшенный ползунок */
         #slider {
             position: absolute;
-            width: 70px;
-            left: -30px;
-            height: 34px;
-            background: linear-gradient(90deg, #ff4757, #ff6b81);
-            border-radius: 17px;
-            border: 3px solid white;
-            box-shadow: 0 0 15px #ff4757;
+            width: 50px;       /* Уменьшили ширину */
+            left: -20px;       /* Центрируем */
+            height: 24px;      /* Уменьшили высоту */
+            background: linear-gradient(90deg, #ff7979, #ff9e9e); /* Мягкий коралловый цвет */
+            border-radius: 12px;
+            border: 2px solid white;
+            box-shadow: 0 0 10px rgba(255, 121, 121, 0.6); /* Мягкое свечение */
             z-index: 6;
         }
 
+        /* Менее яркий лазер */
         #slider-pointer {
             position: absolute;
             width: 1000px;
-            height: 4px;
-            background: linear-gradient(90deg, rgba(255, 71, 87, 0.9) 0%, rgba(255, 71, 87, 0) 100%);
+            height: 3px; /* Сделали тоньше */
+            background: linear-gradient(90deg, rgba(255, 121, 121, 0.6) 0%, rgba(255, 121, 121, 0) 100%); /* Полупрозрачный, не режет глаз */
             top: 50%;
             left: 100%;
             transform: translateY(-50%);
@@ -118,14 +121,14 @@
             z-index: 1;
         }
 
-        /* НОВАЯ КНОПКА (Увеличена и опущена на самое основание) */
+        /* Кнопка (Картинка) */
         #hammer-btn {
             position: absolute;
-            bottom: -12%; /* Опущена на самое дно */
+            bottom: -8%; 
             left: 50%;
             transform: translateX(-50%);
-            width: 180px;  /* Заметно увеличена */
-            height: 150px; 
+            width: 160px;  
+            height: 140px; 
             background-color: transparent;
             background-image: url('https://i.postimg.cc/Y0LnhnXX/11-(12).png');
             background-size: contain;
@@ -138,16 +141,8 @@
             outline: none;
             -webkit-tap-highlight-color: transparent;
         }
-        /* Эффект вдавливания при клике */
-        #hammer-btn:active { 
-            transform: translate(-50%, 12px) scale(0.95); 
-        }
-        /* Черно-белый эффект после клика */
-        #hammer-btn:disabled { 
-            filter: grayscale(100%); 
-            cursor: not-allowed; 
-            opacity: 0.8;
-        }
+        #hammer-btn:active { transform: translate(-50%, 10px) scale(0.95); }
+        #hammer-btn:disabled { filter: grayscale(100%); cursor: not-allowed; opacity: 0.8; }
 
         /* ПРАВАЯ ПАНЕЛЬ */
         #right-panel {
@@ -155,28 +150,28 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            padding: 40px 60px 40px 20px;
+            padding: 30px 60px 40px 20px;
             box-sizing: border-box;
             position: relative;
             z-index: 2;
         }
 
-        #progress-container { width: 100%; background: rgba(0,0,0,0.5); border-radius: 10px; height: 12px; margin-bottom: 20px; border: 2px solid #555; overflow: hidden; flex-shrink: 0; }
+        #progress-container { width: 100%; background: rgba(0,0,0,0.5); border-radius: 10px; height: 12px; margin-bottom: 15px; border: 2px solid #555; overflow: hidden; flex-shrink: 0; }
         #progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #f1c40f, #f39c12); transition: width 0.3s ease; }
-        #progress-text { text-align: right; color: #f1c40f; font-weight: 700; font-size: 1.2rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; }
+        #progress-text { text-align: right; color: #f1c40f; font-weight: 700; font-size: 1.2rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; }
 
         #question-display {
             background-color: rgba(255, 255, 255, 0.95);
             color: #2c3e50;
             padding: 20px 30px;
             border-radius: 20px;
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 700;
             text-align: center;
             border: 4px solid #f39c12;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
             margin-bottom: 30px;
-            min-height: 110px;
+            min-height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -185,33 +180,33 @@
             flex-shrink: 0;
         }
 
-        /* НОВЫЙ КОНТЕЙНЕР ОТВЕТОВ: Flexbox гарантирует 3 ровных карточки */
+        /* Контейнер ответов привязан к шкале (от верха до низа) */
         #answers-container {
             position: absolute;
             left: 20px;
             width: calc(100% - 80px);
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Распределяет карточки от верха до низа */
+            justify-content: space-between; /* Распределяет 3 ответа равномерно */
         }
 
         .answer-slot {
             width: 100%;
             background-color: rgba(255, 255, 255, 0.95);
-            border: 3px solid #34495e;
-            color: #2c3e50;
+            border: 3px solid #cbd5e1; /* Мягкая рамка */
+            color: #1e293b;
             padding: 20px;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
             border-radius: 15px;
             text-align: center;
             transition: all 0.2s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
             z-index: 3;
             box-sizing: border-box;
         }
 
-        /* МЯГКИЙ ФИДБЕК */
+        /* ФИДБЕК */
         #feedback-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
         #feedback-text { 
             font-size: 5rem; 
@@ -233,12 +228,12 @@
 
         /* Финальный экран */
         #final-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 30; display: none; text-align: center; backdrop-filter: blur(5px); }
-        #final-screen h2 { font-size: 4rem; font-weight: 900; margin: 0; color: #fff; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 5px 15px rgba(233, 69, 96, 0.5); }
+        #final-screen h2 { font-size: 4rem; font-weight: 900; margin: 0; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
         #final-score { font-size: 7rem; font-weight: 900; color: #ffd700; margin: 10px 0; text-shadow: 0 5px 20px rgba(243, 156, 18, 0.5); }
         #final-rank { color: #2ecc71; font-size: 3rem; text-transform: uppercase; font-weight: 700; margin-bottom: 40px;}
-        .restart-btn { padding: 20px 60px; background-color: #e94560; color: white; border: none; border-radius: 40px; font-size: 2rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 8px 0 #c0392b, 0 15px 20px rgba(0,0,0,0.3); text-transform: uppercase; }
+        .restart-btn { padding: 20px 60px; background-color: #ff7979; color: white; border: none; border-radius: 40px; font-size: 2rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 8px 0 #eb4d4b; text-transform: uppercase; }
         .restart-btn:hover { transform: scale(1.05); }
-        .restart-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #c0392b; }
+        .restart-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #eb4d4b; }
     </style>
 </head>
 <body>
@@ -252,7 +247,6 @@
             <div id="track">
                 <div id="slider"><div id="slider-pointer"></div></div>
             </div>
-            <!-- Новая крупная кнопка на основании -->
             <button id="hammer-btn" aria-label="Удар молотком"></button>
         </div>
     </div>
@@ -262,7 +256,6 @@
         <div id="progress-container"><div id="progress-bar"></div></div>
         
         <div id="question-display">Загрузка...</div>
-        <!-- Контейнер для строго трех ответов -->
         <div id="answers-container"></div>
     </div>
 
@@ -280,6 +273,7 @@
 </div>
 
 <script>
+    // ЗВУКИ
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playSound(type) {
         if(audioCtx.state === 'suspended') audioCtx.resume();
@@ -314,7 +308,7 @@
         }
     }
 
-    // 12 вопросов, строго по 3 варианта ответа
+    // КОНФИГУРАЦИЯ (12 вопросов, 3 варианта, очки по ТЗ)
     const gameConfig = {
         sliderSpeedMultiplier: 1.5,
         points: { perfect: 100, good: 70, wrong: -80, miss: -50 },
@@ -364,7 +358,7 @@
         finalRank: document.getElementById('final-rank')
     };
 
-    // Привязываем высоту контейнера ответов строго к высоте трубы силомера
+    // Функция, которая делает высоту 3-х ответов точно такой же, как длина трубы силомера
     function alignAnswersContainer() {
         const trackRect = ui.track.getBoundingClientRect();
         const rightPanelRect = document.getElementById('right-panel').getBoundingClientRect();
@@ -394,7 +388,6 @@
         ui.answersBox.innerHTML = '';
         alignAnswersContainer();
 
-        // Flexbox автоматически распределит эти 3 карточки от верха до низа
         qData.options.forEach((opt, index) => {
             const div = document.createElement('div');
             div.className = 'answer-slot';
@@ -441,7 +434,7 @@
     ui.btn.addEventListener('mousedown', handleHit);
     ui.btn.addEventListener('touchstart', handleHit);
 
-    // Логика точного определения попадания по координатам карточек
+    // Проверка попадания: Абсолютные координаты лазера сравниваются с краями карточек
     function checkHit() {
         const trackRect = ui.track.getBoundingClientRect();
         const hitLineAbsoluteY = trackRect.top + laserY; 
@@ -452,7 +445,7 @@
 
         slots.forEach((slot, index) => {
             const rect = slot.getBoundingClientRect();
-            // Проверяем, находится ли лазер внутри границ карточки
+            // Попадание засчитывается, если лазер находится от верхнего до нижнего края карточки
             if (hitLineAbsoluteY >= rect.top && hitLineAbsoluteY <= rect.bottom) {
                 hitIndex = index;
                 const slotCenter = rect.top + (rect.height / 2);
@@ -535,7 +528,7 @@
     }
 
     function fireConfetti() {
-        confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, colors: ['#ff4757', '#f1c40f', '#2ecc71', '#3498db'] });
+        confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, colors: ['#ff7979', '#f1c40f', '#2ecc71', '#3498db'] });
     }
 
     function endGame() {
