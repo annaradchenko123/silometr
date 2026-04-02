@@ -44,17 +44,6 @@
             z-index: 1;
         }
 
-        /* ЭФФЕКТ HIT STOP (БЕЛАЯ ВСПЫШКА) */
-        #hit-stop-flash {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #ffffff;
-            opacity: 0;
-            z-index: 9999;
-            pointer-events: none;
-            transition: opacity 0.1s ease-out;
-        }
-
         /* СТАРТОВОЕ МЕНЮ */
         #start-screen {
             position: absolute;
@@ -128,7 +117,7 @@
             background-repeat: no-repeat;
         }
 
-        /* ОБЫЧНАЯ ТРЯСКА ЭКРАНА */
+        /* АНИМАЦИЯ ТРЯСКИ ЭКРАНА ПРИ УДАРЕ */
         @keyframes shake {
             0% { transform: translate(2px, 2px) rotate(0deg); }
             10% { transform: translate(-2px, -3px) rotate(-1deg); }
@@ -144,24 +133,6 @@
         }
         .shake-effect {
             animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
-        }
-
-        /* ЭПИЧЕСКАЯ ТРЯСКА (ДЛЯ ИДЕАЛЬНОГО УДАРА) */
-        @keyframes epicShake {
-            0% { transform: translate(8px, 8px) scale(1.03) rotate(0deg); }
-            10% { transform: translate(-8px, -10px) scale(1.03) rotate(-2deg); }
-            20% { transform: translate(-10px, 0px) scale(1.03) rotate(2deg); }
-            30% { transform: translate(10px, 8px) scale(1.03) rotate(0deg); }
-            40% { transform: translate(8px, -8px) scale(1.03) rotate(2deg); }
-            50% { transform: translate(-8px, 8px) scale(1) rotate(-2deg); }
-            60% { transform: translate(-10px, 2px) scale(1) rotate(0deg); }
-            70% { transform: translate(10px, 4px) scale(1) rotate(-1deg); }
-            80% { transform: translate(-8px, -4px) scale(1) rotate(1deg); }
-            90% { transform: translate(8px, 8px) scale(1) rotate(0deg); }
-            100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-        }
-        .epic-shake-effect {
-            animation: epicShake 0.4s cubic-bezier(.36,.07,.19,.97) both;
         }
 
         /* ПЛАШКА ДЛЯ ОЧКОВ */
@@ -186,7 +157,7 @@
         #score-display {
             color: #ffd700; 
             font-weight: 900;
-            font-size: 1.8rem; 
+            font-size: 1.8rem; /* Уменьшили размер шрифта */
             text-shadow: 0 3px 6px rgba(0,0,0,0.8); 
             transition: transform 0.2s;
             margin-top: -2px;
@@ -262,6 +233,7 @@
             outline: none;
             -webkit-tap-highlight-color: transparent;
         }
+        /* Вдавливание при клике МЫШКОЙ или ПРОБЕЛОМ */
         #hammer-btn:active, #hammer-btn.pressed { transform: translate(-50%, 8px) scale(0.95); }
         #hammer-btn:disabled { filter: grayscale(100%); cursor: not-allowed; opacity: 0.8; }
 
@@ -325,7 +297,7 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.15);
             z-index: 3;
             box-sizing: border-box;
-            transform-origin: left center; 
+            transform-origin: left center; /* Нужно для правильного удара слева */
         }
 
         /* ФИЗИЧЕСКИЙ УДАР ПО КАРТОЧКЕ */
@@ -338,18 +310,6 @@
         }
         .card-smash-anim {
             animation: cardSmash 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
-        }
-        
-        /* УСИЛЕННЫЙ УДАР ДЛЯ ИДЕАЛЬНОГО ПОПАДАНИЯ */
-        @keyframes cardEpicSmash {
-            0% { transform: translateX(0) scale(1); }
-            20% { transform: translateX(35px) rotate(5deg) scale(0.9); } 
-            50% { transform: translateX(-10px) rotate(-2deg) scale(1.05); } 
-            80% { transform: translateX(5px) rotate(1deg) scale(1.1); } 
-            100% { transform: translateX(0) rotate(0deg) scale(1.1); } 
-        }
-        .card-epic-smash-anim {
-            animation: cardEpicSmash 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
         }
 
         /* ВСПЛЫВАЮЩИЙ ФИДБЕК ЗА УДАР */
@@ -423,9 +383,6 @@
 
 <div id="game-wrapper">
     <div class="overlay-bg"></div>
-
-    <!-- ВСПЫШКА ДЛЯ HIT STOP -->
-    <div id="hit-stop-flash"></div>
 
     <!-- СТАРТОВОЕ МЕНЮ -->
     <div id="start-screen">
@@ -572,7 +529,7 @@
     let score = 0;
     let comboCount = 0;       
     let comboMultiplier = 1;  
-    let gameStats = { perfect: 0, good: 0, wrong: 0, maxCombo: 0 }; 
+    let gameStats = { perfect: 0, good: 0, wrong: 0, maxCombo: 0 }; // СТАТИСТИКА
 
     let animationFrameId;
     let laserY = 0; 
@@ -603,8 +560,7 @@
         statPerfect: document.getElementById('stat-perfect'),
         statGood: document.getElementById('stat-good'),
         statWrong: document.getElementById('stat-wrong'),
-        statMaxCombo: document.getElementById('stat-max-combo'),
-        hitStopFlash: document.getElementById('hit-stop-flash') // Добавили вспышку
+        statMaxCombo: document.getElementById('stat-max-combo')
     };
 
     function alignAnswersContainer() {
@@ -703,6 +659,10 @@
         if(e) e.preventDefault();
         if (!isPlaying) return;
         
+        ui.machine.classList.remove('shake-effect');
+        void ui.machine.offsetWidth; 
+        ui.machine.classList.add('shake-effect');
+
         playSound('hit');
         isPlaying = false;
         cancelAnimationFrame(animationFrameId);
@@ -738,31 +698,12 @@
         let message = "";
         let color = "";
         let isCorrect = (hitIndex === correctIndex);
-        let isPerfect = (isCorrect && accuracy > 0.6);
 
         const slots = document.querySelectorAll('.answer-slot');
         
-        // СБРОС АНИМАЦИИ ТРЯСКИ
-        ui.machine.classList.remove('shake-effect', 'epic-shake-effect');
-        void ui.machine.offsetWidth; 
-
-        // ЛОГИКА HIT STOP И ТРЯСКИ
-        if (isPerfect) {
-            // Идеальное попадание: Эпичная тряска + Вспышка (Hit Stop)
-            ui.machine.classList.add('epic-shake-effect');
-            
-            ui.hitStopFlash.style.opacity = '0.8';
-            setTimeout(() => { ui.hitStopFlash.style.opacity = '0'; }, 80); // Мгновенная вспышка
-
-            if (hitIndex !== -1) {
-                slots[hitIndex].classList.add('card-epic-smash-anim'); // Более сильное вдавливание
-            }
-        } else {
-            // Обычная тряска для всего остального
-            ui.machine.classList.add('shake-effect');
-            if (hitIndex !== -1) {
-                slots[hitIndex].classList.add('card-smash-anim'); // Обычное вдавливание
-            }
+        // ФИЗИЧЕСКИЙ ОТКЛИК КАРТОЧКИ 
+        if (hitIndex !== -1) {
+            slots[hitIndex].classList.add('card-smash-anim');
         }
 
         // ЛОГИКА КОМБО И СТАТИСТИКИ
@@ -775,7 +716,6 @@
             comboMultiplier = 1;
         }
 
-        // НАЧИСЛЕНИЕ ОЧКОВ
         if (hitIndex === -1) {
             pointsEarned = gameConfig.points.miss;
             message = "ПРОМАХ!";
@@ -788,7 +728,7 @@
             playSound('success');
             fireConfetti(); 
 
-            if (isPerfect) { 
+            if (accuracy > 0.6) { 
                 pointsEarned = gameConfig.points.perfect * comboMultiplier; 
                 message = "ИДЕАЛЬНО!";
                 color = "#2ecc71";
