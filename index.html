@@ -157,7 +157,7 @@
         #score-display {
             color: #ffd700; 
             font-weight: 900;
-            font-size: 1.8rem; /* Уменьшили размер шрифта */
+            font-size: 1.8rem; 
             text-shadow: 0 3px 6px rgba(0,0,0,0.8); 
             transition: transform 0.2s;
             margin-top: -2px;
@@ -233,7 +233,6 @@
             outline: none;
             -webkit-tap-highlight-color: transparent;
         }
-        /* Вдавливание при клике МЫШКОЙ или ПРОБЕЛОМ */
         #hammer-btn:active, #hammer-btn.pressed { transform: translate(-50%, 8px) scale(0.95); }
         #hammer-btn:disabled { filter: grayscale(100%); cursor: not-allowed; opacity: 0.8; }
 
@@ -297,7 +296,7 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.15);
             z-index: 3;
             box-sizing: border-box;
-            transform-origin: left center; /* Нужно для правильного удара слева */
+            transform-origin: left center; 
         }
 
         /* ФИЗИЧЕСКИЙ УДАР ПО КАРТОЧКЕ */
@@ -501,7 +500,8 @@
 
     // КОНФИГУРАЦИЯ
     const gameConfig = {
-        sliderSpeedMultiplier: 1.5,
+        // УМЕНЬШИЛИ СКОРОСТЬ (было 1.5, стало 0.9)
+        sliderSpeedMultiplier: 0.9, 
         points: { perfect: 100, good: 70, wrong: -80, miss: -50 },
         questions: [
             { text: "Какая планета самая большая в Солнечной системе?", options: ["Земля", "Марс", "Юпитер"], correctIndex: 2 },
@@ -529,7 +529,7 @@
     let score = 0;
     let comboCount = 0;       
     let comboMultiplier = 1;  
-    let gameStats = { perfect: 0, good: 0, wrong: 0, maxCombo: 0 }; // СТАТИСТИКА
+    let gameStats = { perfect: 0, good: 0, wrong: 0, maxCombo: 0 }; 
 
     let animationFrameId;
     let laserY = 0; 
@@ -581,6 +581,7 @@
         }, 300);
     });
 
+    // ОБРАБОТКА ПРОБЕЛА
     window.addEventListener('keydown', (e) => {
         if (e.code === 'Space') {
             e.preventDefault(); 
@@ -595,6 +596,18 @@
             ui.btn.classList.remove('pressed'); 
         }
     });
+
+    // ОБРАБОТКА КЛИКА И ТАЧА ПО КНОПКЕ
+    ui.btn.addEventListener('mousedown', (e) => {
+        if (!ui.btn.disabled && isPlaying) {
+            handleHit(e);
+        }
+    });
+    ui.btn.addEventListener('touchstart', (e) => {
+        if (!ui.btn.disabled && isPlaying) {
+            handleHit(e);
+        }
+    }, { passive: false });
 
     function initGame() {
         currentQuestionIndex = 0;
