@@ -462,4 +462,159 @@
         const step = (t) => {
             if (!sT) sT = t; const p = Math.min((t - sT) / dur, 1);
             ui.score.innerText = Math.floor(start + (end - start) * (p * (2 - p)));
-            
+            p < 1 ? requestAnimationFrame(step) : ui.score.innerText = end;
+        }; requestAnimationFrame(step);
+    }
+    function updateScore(pts) { const old = score; score = Math.max(0, score + pts); if(pts !== 0) { if (!ui.score.classList.contains('combo-active')) { ui.score.classList.add('score-anim'); setTimeout(()=>ui.score.classList.remove('score-anim'), 300); } animateScore(old, score, 1000); } }
+    function fireConfetti() { confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, colors: ['#ffd700', '#f1c40f', '#2ecc71', '#3498db'] }); }
+
+    function endGame(isDeath) {
+        bgMusic.volume = 0.02; ui.progBar.style.width = '100%'; ui.finalScreen.style.display = 'flex'; ui.finalScore.innerText = score; ui.score.classList.remove('combo-active'); 
+        if (isDeath) { ui.finalTitle.innerText = GAME_CFG.texts.finLose; ui.finalTitle.style.color = "#ff7979"; } 
+        else { ui.finalTitle.innerText = GAME_CFG.texts.finWin; ui.finalTitle.style.color = "#fff"; fireConfetti(); setTimeout(fireConfetti, 500); }
+        ui.statP.innerText = gameStats.p; ui.statG.innerText = gameStats.g; ui.statW.innerText = gameStats.w;
+        let mM = Math.min(gameStats.m, 3); ui.statM.innerText = gameStats.m > 1 ? `x${mM} (${gameStats.m} ${GAME_CFG.texts.statRow})` : "x1";
+    }
+    alignAnswers();
+<\/script>
+</body>
+</html>
+</template>
+
+<!-- СКРИПТЫ РЕДАКТОРА -->
+<script>
+    // Пресеты текстов
+    const presets = {
+        ru: {
+            st: "КАК ИГРАТЬ?", sd: "Золотой лазер быстро бегает вверх и вниз. Нажмите на кнопку (ИЛИ на ПРОБЕЛ), когда лазер окажется ровно на правильном ответе!",
+            bs: "НАЧАТЬ!", br: "ИГРАТЬ СНОВА", pr: "Вопрос", hp: "ИДЕАЛЬНО!", hg: "ОТЛИЧНО!", hw: "ОШИБКА!", hm: "ПРОМАХ!",
+            cmb: "КОМБО", fw: "ИГРА ЗАВЕРШЕНА", fl: "ПОТРАЧЕНО", s1: "Идеально:", s2: "Отлично:", s3: "Ошибки:", s4: "Макс. Комбо:", sr: "подряд"
+        },
+        en: {
+            st: "HOW TO PLAY?", sd: "The golden laser moves fast up and down. Hit the button (OR press SPACE) exactly when the laser is on the correct answer!",
+            bs: "START!", br: "PLAY AGAIN", pr: "Question", hp: "PERFECT!", hg: "GOOD!", hw: "WRONG!", hm: "MISS!",
+            cmb: "COMBO", fw: "GAME COMPLETED", fl: "GAME OVER", s1: "Perfect:", s2: "Good:", s3: "Mistakes:", s4: "Max Combo:", sr: "in a row"
+        }
+    };
+
+    let qCount = 0;
+
+    function applyLangPreset() {
+        const p = presets[document.getElementById('lang-select').value];
+        document.getElementById('t-start-title').value = p.st; document.getElementById('t-start-desc').value = p.sd;
+        document.getElementById('t-btn-start').value = p.bs; document.getElementById('t-btn-restart').value = p.br;
+        document.getElementById('t-progress').value = p.pr; document.getElementById('t-hit-perfect').value = p.hp;
+        document.getElementById('t-hit-good').value = p.hg; document.getElementById('t-hit-wrong').value = p.hw;
+        document.getElementById('t-hit-miss').value = p.hm; document.getElementById('t-combo').value = p.cmb;
+        document.getElementById('t-fin-win').value = p.fw; document.getElementById('t-fin-lose').value = p.fl;
+        document.getElementById('t-stat-1').value = p.s1; document.getElementById('t-stat-2').value = p.s2;
+        document.getElementById('t-stat-3').value = p.s3; document.getElementById('t-stat-4').value = p.s4;
+        document.getElementById('t-stat-row').value = p.sr;
+    }
+
+    function addQuestionBlock() {
+        qCount++;
+        const div = document.createElement('div');
+        div.className = 'question-block';
+        div.id = `qblock-${qCount}`;
+        div.innerHTML = `
+            <h4>Вопрос ${qCount}</h4>
+            <button class="remove-btn" onclick="this.parentElement.remove()">Удалить</button>
+            <div class="form-group">
+                <input type="text" class="q-text" placeholder="Текст вопроса..." value="Вопрос номер ${qCount}?">
+            </div>
+            <div class="options-grid">
+                <input type="text" class="q-opt-0" placeholder="Вариант 1" value="Ответ 1">
+                <input type="text" class="q-opt-1" placeholder="Вариант 2" value="Ответ 2">
+                <input type="text" class="q-opt-2" placeholder="Вариант 3" value="Ответ 3">
+            </div>
+            <select class="correct-select">
+                <option value="0">Правильный ответ: Вариант 1</option>
+                <option value="1">Правильный ответ: Вариант 2</option>
+                <option value="2">Правильный ответ: Вариант 3</option>
+            </select>
+        `;
+        document.getElementById('questions-container').appendChild(div);
+    }
+
+    function hexToRgb(hex) {
+        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : "255, 255, 255";
+    }
+
+    function generateIframe() {
+        // 1. Сбор вопросов
+        const qBlocks = document.querySelectorAll('.question-block');
+        if (qBlocks.length === 0) { alert('Добавьте хотя бы 1 вопрос!'); return; }
+        
+        let questions = [];
+        qBlocks.forEach(b => {
+            questions.push({
+                q: b.querySelector('.q-text').value,
+                opt: [ b.querySelector('.q-opt-0').value, b.querySelector('.q-opt-1').value, b.querySelector('.q-opt-2').value ],
+                c: b.querySelector('.correct-select').value
+            });
+        });
+
+        // 2. Сбор конфига
+        const config = {
+            questions: questions,
+            texts: {
+                startTitle: document.getElementById('t-start-title').value,
+                startDesc: document.getElementById('t-start-desc').value,
+                btnStart: document.getElementById('t-btn-start').value,
+                btnRestart: document.getElementById('t-btn-restart').value,
+                progress: document.getElementById('t-progress').value,
+                hitPerf: document.getElementById('t-hit-perfect').value,
+                hitGood: document.getElementById('t-hit-good').value,
+                hitWrong: document.getElementById('t-hit-wrong').value,
+                hitMiss: document.getElementById('t-hit-miss').value,
+                combo: document.getElementById('t-combo').value,
+                finWin: document.getElementById('t-fin-win').value,
+                finLose: document.getElementById('t-fin-lose').value,
+                stat1: document.getElementById('t-stat-1').value,
+                stat2: document.getElementById('t-stat-2').value,
+                stat3: document.getElementById('t-stat-3').value,
+                stat4: document.getElementById('t-stat-4').value,
+                statRow: document.getElementById('t-stat-row').value
+            }
+        };
+
+        // 3. Дизайн переменные
+        const font = document.getElementById('font-family').value;
+        const txtCol = document.getElementById('text-color').value;
+        const pBgRgb = hexToRgb(document.getElementById('panel-color').value);
+        const pOpac = document.getElementById('panel-opacity').value / 100;
+
+        // 4. Подстановка в шаблон
+        let template = document.getElementById('game-template').innerHTML;
+        template = template.replace('{{VAR_FONT}}', font);
+        template = template.replace('{{VAR_TEXT_COLOR}}', txtCol);
+        template = template.replace('{{VAR_PANEL_BG}}', pBgRgb);
+        template = template.replace('{{VAR_PANEL_OPACITY}}', pOpac);
+        template = template.replace('{{VAR_JSON_CONFIG}}', JSON.stringify(config));
+
+        // 5. Кодирование в Base64 для Iframe
+        const encodedHtml = btoa(unescape(encodeURIComponent(template)));
+        const iframeStr = `<iframe src="data:text/html;base64,${encodedHtml}" width="100%" height="720px" frameborder="0" allowfullscreen style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);"></iframe>`;
+        
+        document.getElementById('iframe-code').value = iframeStr;
+        document.getElementById('output-area').style.display = 'block';
+        
+        // Прокрутка вниз
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function copyCode() {
+        const ta = document.getElementById('iframe-code');
+        ta.select(); document.execCommand('copy');
+        alert('Код скопирован! Теперь вставьте его в Genially через меню "Insert -> </> Other"');
+    }
+
+    // Инициализация при загрузке
+    window.onload = () => {
+        addQuestionBlock(); // Добавляем первый пустой вопрос для примера
+    }
+</script>
+</body>
+</html>
