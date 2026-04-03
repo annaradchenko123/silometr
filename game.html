@@ -3,238 +3,857 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Конструктор Игры: Силомер</title>
+    <title>Игра: Силомер</title>
+    <!-- Библиотека для салюта -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #2c3e50; margin-top: 0; border-bottom: 2px solid #ecf0f1; padding-bottom: 15px; }
-        .section { background: #fafbfc; border: 1px solid #e1e4e8; padding: 20px; border-radius: 8px; margin-bottom: 25px; }
-        .section h2 { margin-top: 0; font-size: 1.2rem; color: #2c3e50; border-left: 4px solid #3498db; padding-left: 10px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; color: #555; }
-        input[type="text"], select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 1rem; }
-        .row { display: flex; gap: 20px; }
-        .col { flex: 1; }
-        .question-block { background: #fff; border: 1px solid #d1d5da; padding: 20px; border-radius: 8px; margin-bottom: 15px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .question-block h4 { margin: 0 0 15px 0; color: #e67e22; font-size: 1.1rem; }
-        .remove-btn { position: absolute; top: 15px; right: 15px; background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .correct-select { width: 100%; padding: 8px; background-color: #f0f8ff; border-color: #3498db; font-weight: bold; }
-        .btn-add { background: #2ecc71; color: white; border: none; padding: 12px 25px; border-radius: 6px; font-weight: bold; cursor: pointer; display: block; margin: 0 auto; font-size: 1rem; }
-        .btn-generate { background: #3498db; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; font-size: 1.2rem; cursor: pointer; width: 100%; margin-top: 20px; text-transform: uppercase; }
-        #output-area { margin-top: 30px; display: none; background: #e8f5e9; padding: 20px; border-radius: 8px; border: 1px solid #a5d6a7; }
-        textarea.code-box { width: 100%; height: 100px; font-family: monospace; padding: 10px; border: 1px solid #a5d6a7; border-radius: 6px; resize: vertical; font-size: 0.9rem; margin-top:5px; }
-        .copy-btn { background: #2c3e50; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-top: 10px; font-weight: bold; }
+        /* Мягкий шрифт Ubuntu */
+        @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700;900&display=swap');
+
+        body { 
+            font-family: 'Ubuntu', sans-serif; 
+            background-color: #000; 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        /* Главный контейнер 16:9 */
+        #game-wrapper {
+            width: 100%;
+            max-width: 1280px; 
+            aspect-ratio: 16 / 9; 
+            background-image: url('https://i.postimg.cc/HsxzZ6mn/image.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+            display: flex;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }
+
+        .overlay-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 100%);
+            z-index: 1;
+        }
+
+        /* СТАРТОВОЕ МЕНЮ */
+        #start-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50; 
+            backdrop-filter: blur(5px);
+            transition: opacity 0.3s;
+        }
+        .start-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px 60px;
+            border-radius: 30px;
+            text-align: center;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 4px solid #f39c12;
+        }
+        .start-content h2 {
+            font-size: 3rem;
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        .start-content p {
+            font-size: 1.5rem;
+            color: #34495e;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        #start-btn {
+            padding: 15px 60px;
+            background-color: #ff7979;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Ubuntu', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 8px 0 #eb4d4b;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+        #start-btn:hover { transform: scale(1.05); }
+        #start-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #eb4d4b; }
+
+        /* ЛЕВАЯ ПАНЕЛЬ: Силомер */
+        #left-panel {
+            width: 35%; 
+            height: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* КАРТИНКА СИЛОМЕРА */
+        #silomer-machine {
+            position: absolute;
+            width: 100%;
+            height: 85%;
+            bottom: 5%; 
+            background-image: url('https://i.postimg.cc/85fWQqXv/GG-2-unit-2-3-kopia.png');
+            background-size: contain;
+            background-position: center bottom;
+            background-repeat: no-repeat;
+        }
+
+        /* АНИМАЦИЯ ТРЯСКИ ЭКРАНА ПРИ УДАРЕ */
+        @keyframes shake {
+            0% { transform: translate(2px, 2px) rotate(0deg); }
+            10% { transform: translate(-2px, -3px) rotate(-1deg); }
+            20% { transform: translate(-4px, 0px) rotate(1deg); }
+            30% { transform: translate(4px, 3px) rotate(0deg); }
+            40% { transform: translate(2px, -2px) rotate(1deg); }
+            50% { transform: translate(-2px, 3px) rotate(-1deg); }
+            60% { transform: translate(-4px, 1px) rotate(0deg); }
+            70% { transform: translate(4px, 2px) rotate(-1deg); }
+            80% { transform: translate(-2px, -2px) rotate(1deg); }
+            90% { transform: translate(2px, 3px) rotate(0deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .shake-effect {
+            animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        /* ПЛАШКА ДЛЯ ОЧКОВ */
+        #score-wrapper {
+            position: absolute;
+            top: -8%; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 240px;  
+            height: 110px; 
+            background-image: url('https://i.postimg.cc/RhM2zKxn/11_(14).png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        /* САМИ ЦИФРЫ ОЧКОВ (УМЕНЬШЕН РАЗМЕР) */
+        #score-display {
+            color: #ffd700; 
+            font-weight: 900;
+            font-size: 1.8rem; 
+            text-shadow: 0 3px 6px rgba(0,0,0,0.8); 
+            transition: transform 0.2s;
+            margin-top: -2px;
+        }
+        .score-anim { transform: scale(1.3); color: #fff !important; }
+
+        /* ПУЛЬСАЦИЯ ЦИФР ПРИ АКТИВНОМ КОМБО */
+        @keyframes comboPulse {
+            0% { transform: scale(1); text-shadow: 0 3px 6px rgba(0,0,0,0.8); }
+            50% { transform: scale(1.15); text-shadow: 0 0 20px #ff7979, 0 0 10px #f1c40f; color: #fff; }
+            100% { transform: scale(1); text-shadow: 0 3px 6px rgba(0,0,0,0.8); }
+        }
+        .combo-active {
+            animation: comboPulse 0.8s infinite !important;
+        }
+
+        /* НАСТРОЙКА ШКАЛЫ */
+        #track {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 30%;      
+            height: 48%;   
+            width: 10px;
+            background: rgba(255, 255, 255, 0.05); 
+            z-index: 5;
+        }
+
+        /* КРУГЛЫЙ МИНИАТЮРНЫЙ КУРСОР */
+        #slider {
+            position: absolute;
+            box-sizing: border-box;
+            width: 24px;       
+            height: 24px;      
+            left: -7px;        
+            background: #ffd700; 
+            border-radius: 50%; 
+            border: 2px solid white;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8); 
+            z-index: 6;
+        }
+
+        /* ЛАЗЕР */
+        #slider-pointer {
+            position: absolute;
+            width: 1000px;
+            height: 3px; 
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.9) 0%, rgba(255, 215, 0, 0) 100%); 
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* КНОПКА УДАРА */
+        #hammer-btn {
+            position: absolute;
+            bottom: 8%; 
+            left: 49.5%; 
+            transform: translateX(-50%);
+            width: 90px;  
+            height: 90px; 
+            background-color: transparent;
+            background-image: url('https://i.postimg.cc/wM6ndL8Z/11_(13).png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.1s;
+            z-index: 10;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #hammer-btn:active, #hammer-btn.pressed { transform: translate(-50%, 8px) scale(0.95); }
+        #hammer-btn:disabled { filter: grayscale(100%); cursor: not-allowed; opacity: 0.8; }
+
+        /* ПРАВАЯ ПАНЕЛЬ */
+        #right-panel {
+            width: 65%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 60px 40px 20px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 2;
+        }
+
+        #progress-container { width: 100%; background: rgba(0,0,0,0.5); border-radius: 10px; height: 12px; margin-bottom: 15px; border: 2px solid #555; overflow: hidden; flex-shrink: 0; }
+        #progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #f1c40f, #f39c12); transition: width 0.3s ease; }
+        #progress-text { text-align: right; color: #f1c40f; font-weight: 700; font-size: 1.2rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; }
+
+        #question-display {
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #2c3e50;
+            padding: 20px 30px;
+            border-radius: 20px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            border: 4px solid #f39c12;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        /* Контейнер ответов */
+        #answers-container {
+            position: absolute;
+            left: 20px;
+            width: calc(100% - 80px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; 
+        }
+
+        .answer-slot {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 3px solid #cbd5e1; 
+            color: #1e293b;
+            padding: 20px;
+            font-size: 1.6rem;
+            font-weight: 700;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.2s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            z-index: 3;
+            box-sizing: border-box;
+            transform-origin: left center; 
+        }
+
+        /* ФИЗИЧЕСКИЙ УДАР ПО КАРТОЧКЕ */
+        @keyframes cardSmash {
+            0% { transform: translateX(0) scale(1); }
+            20% { transform: translateX(20px) rotate(3deg) scale(0.95); } 
+            50% { transform: translateX(-5px) rotate(-1deg) scale(1.02); } 
+            80% { transform: translateX(2px) rotate(1deg) scale(1.05); } 
+            100% { transform: translateX(0) rotate(0deg) scale(1.05); } 
+        }
+        .card-smash-anim {
+            animation: cardSmash 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+        }
+
+        /* ВСПЛЫВАЮЩИЙ ФИДБЕК ЗА УДАР */
+        #feedback-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        #feedback-text { font-size: 5rem; font-weight: 900; text-align: center; text-transform: uppercase; text-shadow: 0 4px 15px rgba(0,0,0,0.4); margin-bottom: 10px; letter-spacing: 2px; }
+        
+        /* СТИЛЬ ДЛЯ НАДПИСИ "КОМБО" */
+        #feedback-combo {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #ff9f43;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            margin-bottom: 15px;
+            display: none; 
+            text-transform: uppercase;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        #feedback-points { 
+            font-size: 3.5rem; 
+            font-weight: 700; 
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 10px 40px; 
+            border-radius: 30px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
+        }
+
+        /* Финальный экран и Статистика */
+        #final-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 30; display: none; text-align: center; backdrop-filter: blur(5px); }
+        #final-title { font-size: 4rem; font-weight: 900; margin: 0; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
+        #final-score { font-size: 6rem; font-weight: 900; color: #ffd700; margin: 5px 0 0 0; text-shadow: 0 5px 20px rgba(243, 156, 18, 0.5); }
+        #final-rank { color: #2ecc71; font-size: 2.5rem; text-transform: uppercase; font-weight: 700; margin-bottom: 25px;}
+        
+        .stats-container {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 2px solid #ffd700;
+            text-align: left;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .stat-row {
+            color: #fff;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 280px;
+            letter-spacing: 1px;
+        }
+        .stat-icon { margin-right: 15px; font-size: 1.8rem; }
+        .stat-row span:last-child { color: #f1c40f; font-weight: 900; font-size: 1.8rem; }
+
+        .restart-btn { padding: 15px 50px; background-color: #ff7979; color: white; border: none; border-radius: 40px; font-size: 2rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 8px 0 #eb4d4b; text-transform: uppercase; }
+        .restart-btn:hover { transform: scale(1.05); }
+        .restart-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #eb4d4b; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1 id="lbl-title">🛠️ Конструктор Силомера</h1>
+<audio id="bg-music" loop preload="auto" crossorigin="anonymous">
+    <source src="https://freepd.com/music/The%20Entertainer.mp3" type="audio/mpeg">
+</audio>
 
-    <!-- ПРЕСЕТЫ ЯЗЫКОВ -->
-    <div class="section">
-        <h2 id="lbl-lang-sec">🌐 Язык интерфейса</h2>
-        <div class="form-group">
-            <select id="lang-select" onchange="changeLanguage()">
-                <option value="ru">🇷🇺 Русский</option>
-                <option value="en">🇬🇧 English</option>
-                <option value="es">🇪🇸 Español</option>
-                <option value="de">🇩🇪 Deutsch</option>
-                <option value="fr">🇫🇷 Français</option>
-                <option value="it">🇮🇹 Italiano</option>
-                <option value="zh">🇨🇳 中文</option>
-            </select>
+<div id="game-wrapper">
+    <div class="overlay-bg"></div>
+
+    <!-- СТАРТОВОЕ МЕНЮ -->
+    <div id="start-screen">
+        <div class="start-content">
+            <h2>КАК ИГРАТЬ?</h2>
+            <p>Золотой лазер быстро бегает вверх и вниз.</p>
+            <p>Нажмите на кнопку (ИЛИ на <b>ПРОБЕЛ</b>), когда лазер окажется ровно на правильном ответе!</p>
+            <p style="color:#e74c3c; font-size: 1.2rem;"><i>Подсказка: Отвечайте правильно без промахов, чтобы активировать 🔥 КОМБО x2 и x3!</i></p>
+            <button id="start-btn">НАЧАТЬ!</button>
         </div>
     </div>
 
-    <!-- ДИЗАЙН -->
-    <div class="section">
-        <h2 id="lbl-design-sec">🎨 Дизайн и Шрифты</h2>
-        <div class="row">
-            <div class="col"><label id="lbl-font">Шрифт</label><select id="cfg-font"><option value="'Ubuntu', sans-serif">Ubuntu</option><option value="'Montserrat', sans-serif">Montserrat</option><option value="'Comic Sans MS', cursive">Comic Sans</option><option value="'Courier New', Courier, monospace">Courier</option></select></div>
-            <div class="col"><label id="lbl-color">Цвет текста</label><input type="color" id="cfg-color" value="#2c3e50"></div>
-        </div><br>
-        <div class="row">
-            <div class="col"><label id="lbl-bg">Цвет плашек</label><input type="color" id="cfg-bg" value="#ffffff"></div>
-            <div class="col"><label><span id="lbl-opacity">Прозрачность:</span> <span id="opacity-val">95</span>%</label><input type="range" id="cfg-opacity" min="50" max="100" value="95" oninput="document.getElementById('opacity-val').innerText = this.value"></div>
+    <div id="left-panel">
+        <div id="silomer-machine">
+            <!-- Плашка с очками -->
+            <div id="score-wrapper">
+                <div id="score-display">0</div>
+            </div>
+            
+            <div id="track">
+                <div id="slider"><div id="slider-pointer"></div></div>
+            </div>
+            
+            <!-- Кнопка удара -->
+            <button id="hammer-btn" aria-label="Удар молотком" disabled></button>
         </div>
     </div>
 
-    <!-- ТЕКСТЫ ИНТЕРФЕЙСА -->
-    <div class="section">
-        <h2 id="lbl-texts-sec">📝 Игровые тексты</h2>
-        <div class="form-group"><label id="lbl-start-title">Стартовый экран: Заголовок</label><input type="text" id="t-start-title"></div>
-        <div class="form-group"><label id="lbl-start-desc">Стартовый экран: Описание</label><textarea id="t-start-desc" rows="2"></textarea></div>
-        <div class="row">
-            <div class="col"><label id="lbl-btn-start">Кнопка СТАРТ</label><input type="text" id="t-btn-start"></div>
-            <div class="col"><label id="lbl-btn-restart">Кнопка РЕСТАРТ</label><input type="text" id="t-btn-restart"></div>
-        </div><br>
-        <div class="row"><div class="col"><label id="lbl-prog">Текст: Вопрос N из M</label><input type="text" id="t-progress"></div></div>
+    <div id="right-panel">
+        <div id="progress-text">Вопрос <span id="progress-num">1</span> из 12</div>
+        <div id="progress-container"><div id="progress-bar"></div></div>
+        
+        <div id="question-display">Загрузка...</div>
+        <div id="answers-container"></div>
     </div>
 
-    <!-- ФИДБЕК УДАРОВ -->
-    <div class="section">
-        <h2 id="lbl-hit-sec">💥 Тексты реакции на удар</h2>
-        <div class="row"><div class="col"><label id="lbl-hit-perf">Идеально</label><input type="text" id="t-hit-perfect"></div><div class="col"><label id="lbl-hit-good">Отлично</label><input type="text" id="t-hit-good"></div></div><br>
-        <div class="row"><div class="col"><label id="lbl-hit-wrong">Ошибка</label><input type="text" id="t-hit-wrong"></div><div class="col"><label id="lbl-hit-miss">Промах</label><input type="text" id="t-hit-miss"></div><div class="col"><label id="lbl-combo">Слово: КОМБО</label><input type="text" id="t-combo"></div></div>
+    <!-- ВСПЛЫВАЮЩИЙ ФИДБЕК ЗА УДАР -->
+    <div id="feedback-overlay">
+        <div id="feedback-text"></div>
+        <div id="feedback-combo">🔥 КОМБО x2 🔥</div>
+        <div id="feedback-points"></div>
     </div>
 
     <!-- ФИНАЛЬНЫЙ ЭКРАН -->
-    <div class="section">
-        <h2 id="lbl-fin-sec">🏆 Финальный экран</h2>
-        <div class="row"><div class="col"><label id="lbl-fin-win">Текст Победы</label><input type="text" id="t-fin-win"></div><div class="col"><label id="lbl-stat-row">Приписка "подряд"</label><input type="text" id="t-stat-row"></div></div><br>
-        <div class="row">
-            <div class="col"><label id="lbl-s1">Идеально</label><input type="text" id="t-stat-1"></div>
-            <div class="col"><label id="lbl-s2">Отлично</label><input type="text" id="t-stat-2"></div>
-            <div class="col"><label id="lbl-s3">Ошибки</label><input type="text" id="t-stat-3"></div>
-            <div class="col"><label id="lbl-s4">Макс Комбо</label><input type="text" id="t-stat-4"></div>
+    <div id="final-screen">
+        <h2 id="final-title">ИГРА ЗАВЕРШЕНА</h2>
+        <div id="final-score">1200</div>
+        <div id="final-rank">Мастер силы!</div>
+        
+        <!-- СТАТИСТИКА -->
+        <div class="stats-container">
+            <div class="stat-row"><span class="stat-icon">🎯</span> Идеально: <span id="stat-perfect">0</span></div>
+            <div class="stat-row"><span class="stat-icon">👍</span> Отлично: <span id="stat-good">0</span></div>
+            <div class="stat-row"><span class="stat-icon">❌</span> Ошибки: <span id="stat-wrong">0</span></div>
+            <div class="stat-row"><span class="stat-icon">🔥</span> Макс. Комбо: <span id="stat-max-combo">x1</span></div>
         </div>
-    </div>
 
-    <!-- ВОПРОСЫ -->
-    <div class="section">
-        <h2 id="lbl-q-sec">❓ Вопросы и ответы</h2>
-        <div id="questions-wrapper"></div>
-        <button class="btn-add" id="btn-add-q" onclick="addQuestion()">+ ДОБАВИТЬ ВОПРОС</button>
-    </div>
-
-    <button class="btn-generate" id="btn-gen" onclick="generateLink()">СГЕНЕРИРОВАТЬ ИГРУ 🚀</button>
-
-    <!-- ВЫДАЧА КОДА И ССЫЛКИ -->
-    <div id="output-area">
-        <h2 style="margin-top:0; color:#27ae60;">✅ Ваша игра готова!</h2>
-        <p><b>1. Прямая ссылка (чтобы отправить ученикам или проверить самому):</b></p>
-        <textarea id="direct-link" class="code-box" style="height: 60px;" readonly></textarea>
-        <button class="copy-btn" onclick="copyCode('direct-link')">📋 Скопировать ссылку</button>
-
-        <p style="margin-top:20px;"><b>2. Код для вставки в Genially (Insert -> Other -> Iframe):</b></p>
-        <textarea id="iframe-code" class="code-box" readonly></textarea>
-        <button class="copy-btn" onclick="copyCode('iframe-code')">📋 Скопировать код Iframe</button>
+        <button class="restart-btn" onclick="initGame()">ИГРАТЬ СНОВА</button>
     </div>
 </div>
 
 <script>
-    const i18n = {
-        ru: {
-            ui: { title: "🛠️ Конструктор Силомера", lang: "🌐 Язык", design: "🎨 Дизайн", font: "Шрифт", color: "Цвет текста", bg: "Цвет плашек", opacity: "Прозрачность:", texts: "📝 Тексты", stTitle: "Стартовый экран: Заголовок", stDesc: "Стартовый экран: Описание", btnStart: "Кнопка СТАРТ", btnRestart: "Кнопка РЕСТАРТ", prog: "Текст: Вопрос N из M", hit: "💥 Тексты реакции", hitPerf: "Идеально", hitGood: "Отлично", hitWrong: "Ошибка", hitMiss: "Промах", combo: "Слово: КОМБО", fin: "🏆 Финальный экран", finWin: "Текст Победы", statRow: "Приписка 'подряд'", s1: "Идеально", s2: "Отлично", s3: "Ошибки", s4: "Макс Комбо", qSec: "❓ Вопросы", addQ: "+ ДОБАВИТЬ ВОПРОС", gen: "СГЕНЕРИРОВАТЬ ИГРУ 🚀", del: "Удалить", qPh: "Введите вопрос...", oPh: "Вариант", cAns: "Правильный ответ:" },
-            game: { st: "КАК ИГРАТЬ?", sd: "Золотой лазер быстро бегает вверх и вниз. Нажмите на кнопку (ИЛИ на ПРОБЕЛ), когда лазер окажется ровно на правильном ответе!", bs: "НАЧАТЬ!", br: "ИГРАТЬ СНОВА", pr: "Вопрос", hp: "ИДЕАЛЬНО!", hg: "ОТЛИЧНО!", hw: "ОШИБКА!", hm: "ПРОМАХ!", cmb: "КОМБО", fw: "ИГРА ЗАВЕРШЕНА", s1: "Идеально:", s2: "Отлично:", s3: "Ошибки:", s4: "Макс. Комбо:", sr: "подряд" }
-        },
-        en: {
-            ui: { title: "🛠️ Arcade Game Maker", lang: "🌐 Language", design: "🎨 Design", font: "Font", color: "Text Color", bg: "Panel Color", opacity: "Opacity:", texts: "📝 Texts", stTitle: "Start Screen: Title", stDesc: "Start Screen: Description", btnStart: "START Button", btnRestart: "RESTART Button", prog: "Text: Question N of M", hit: "💥 Hit Feedback", hitPerf: "Perfect", hitGood: "Good", hitWrong: "Wrong", hitMiss: "Miss", combo: "Word: COMBO", fin: "🏆 Final Screen", finWin: "Victory Text", statRow: "Suffix 'in a row'", s1: "Perfect", s2: "Good", s3: "Mistakes", s4: "Max Combo", qSec: "❓ Questions", addQ: "+ ADD QUESTION", gen: "GENERATE GAME 🚀", del: "Delete", qPh: "Enter question...", oPh: "Option", cAns: "Correct answer:" },
-            game: { st: "HOW TO PLAY?", sd: "The golden laser moves fast up and down. Hit the button (OR press SPACE) exactly when the laser is on the correct answer!", bs: "START!", br: "PLAY AGAIN", pr: "Question", hp: "PERFECT!", hg: "GOOD!", hw: "WRONG!", hm: "MISS!", cmb: "COMBO", fw: "GAME COMPLETED", s1: "Perfect:", s2: "Good:", s3: "Mistakes:", s4: "Max Combo:", sr: "in a row" }
-        },
-        es: {
-            ui: { title: "🛠️ Creador de Juegos", lang: "🌐 Idioma", design: "🎨 Diseño", font: "Fuente", color: "Color texto", bg: "Color panel", opacity: "Opacidad:", texts: "📝 Textos", stTitle: "Título inicio", stDesc: "Descripción", btnStart: "Botón INICIO", btnRestart: "Botón REINICIAR", prog: "Pregunta N de M", hit: "💥 Textos de impacto", hitPerf: "Perfecto", hitGood: "Bien", hitWrong: "Error", hitMiss: "Fallo", combo: "Palabra: COMBO", fin: "🏆 Pantalla Final", finWin: "Texto Victoria", statRow: "Sufijo 'seguidos'", s1: "Perfecto", s2: "Bien", s3: "Errores", s4: "Combo Máx", qSec: "❓ Preguntas", addQ: "+ AÑADIR PREGUNTA", gen: "GENERAR JUEGO 🚀", del: "Eliminar", qPh: "Escribe la pregunta...", oPh: "Opción", cAns: "Respuesta correcta:" },
-            game: { st: "¿CÓMO JUGAR?", sd: "El láser dorado se mueve rápido. ¡Presiona el botón exactamente cuando el láser esté en la respuesta correcta!", bs: "¡EMPEZAR!", br: "VOLVER A JUGAR", pr: "Pregunta", hp: "¡PERFECTO!", hg: "¡BIEN!", hw: "¡ERROR!", hm: "¡FALLO!", cmb: "COMBO", fw: "JUEGO COMPLETADO", s1: "Perfecto:", s2: "Bien:", s3: "Errores:", s4: "Combo Máx:", sr: "seguidos" }
-        },
-        de: {
-            ui: { title: "🛠️ Spiel-Generator", lang: "🌐 Sprache", design: "🎨 Design", font: "Schriftart", color: "Textfarbe", bg: "Panel-Farbe", opacity: "Deckkraft:", texts: "📝 Texte", stTitle: "Start Titel", stDesc: "Start Beschreibung", btnStart: "START Button", btnRestart: "NEUSTART", prog: "Frage N von M", hit: "💥 Treffer-Texte", hitPerf: "Perfekt", hitGood: "Gut", hitWrong: "Falsch", hitMiss: "Daneben", combo: "Wort: KOMBO", fin: "🏆 Endbildschirm", finWin: "Sieg Text", statRow: "Zusatz 'in Folge'", s1: "Perfekt", s2: "Gut", s3: "Fehler", s4: "Max Kombo", qSec: "❓ Fragen", addQ: "+ FRAGE HINZUFÜGEN", gen: "SPIEL GENERIEREN 🚀", del: "Löschen", qPh: "Frage eingeben...", oPh: "Option", cAns: "Richtige Antwort:" },
-            game: { st: "WIE SPIELT MAN?", sd: "Der goldene Laser bewegt sich schnell. Drücke den Knopf genau dann, wenn der Laser auf der richtigen Antwort ist!", bs: "START!", br: "NOCHMAL SPIELEN", pr: "Frage", hp: "PERFEKT!", hg: "GUT!", hw: "FALSCH!", hm: "DANEBEN!", cmb: "KOMBO", fw: "SPIEL ABGESCHLOSSEN", s1: "Perfekt:", s2: "Gut:", s3: "Fehler:", s4: "Max Kombo:", sr: "in Folge" }
-        },
-        fr: {
-            ui: { title: "🛠️ Créateur de Jeu", lang: "🌐 Langue", design: "🎨 Design", font: "Police", color: "Couleur texte", bg: "Couleur panneau", opacity: "Opacité:", texts: "📝 Textes", stTitle: "Titre Accueil", stDesc: "Description", btnStart: "Bouton DÉMARRER", btnRestart: "Bouton REJOUER", prog: "Question N sur M", hit: "💥 Textes d'impact", hitPerf: "Parfait", hitGood: "Bien", hitWrong: "Erreur", hitMiss: "Raté", combo: "Mot : COMBO", fin: "🏆 Écran final", finWin: "Texte Victoire", statRow: "Suffixe 'de suite'", s1: "Parfait", s2: "Bien", s3: "Erreurs", s4: "Combo Max", qSec: "❓ Questions", addQ: "+ AJOUTER QUESTION", gen: "GÉNÉRER LE JEU 🚀", del: "Supprimer", qPh: "Entrez la question...", oPh: "Option", cAns: "Bonne réponse:" },
-            game: { st: "COMMENT JOUER ?", sd: "Le laser doré se déplace rapidement. Appuyez sur le bouton quand le laser est sur la bonne réponse !", bs: "COMMENCER !", br: "REJOUER", pr: "Question", hp: "PARFAIT !", hg: "BIEN !", hw: "ERREUR !", hm: "RATÉ !", cmb: "COMBO", fw: "JEU TERMINÉ", s1: "Parfait :", s2: "Bien :", s3: "Erreurs :", s4: "Combo Max :", sr: "de suite" }
-        },
-        it: {
-            ui: { title: "🛠️ Creatore di Giochi", lang: "🌐 Lingua", design: "🎨 Design", font: "Carattere", color: "Colore testo", bg: "Colore pannelli", opacity: "Opacità:", texts: "📝 Testi", stTitle: "Titolo Iniziale", stDesc: "Descrizione", btnStart: "Pulsante INIZIA", btnRestart: "Pulsante RIGIOCA", prog: "Domanda N di M", hit: "💥 Testi di impatto", hitPerf: "Perfetto", hitGood: "Bene", hitWrong: "Errore", hitMiss: "Mancato", combo: "Parola: COMBO", fin: "🏆 Schermata Finale", finWin: "Testo Vittoria", statRow: "Suffisso 'di fila'", s1: "Perfetto", s2: "Bene", s3: "Errori", s4: "Combo Max", qSec: "❓ Domande", addQ: "+ AGGIUNGI DOMANDA", gen: "GENERA GIOCO 🚀", del: "Elimina", qPh: "Inserisci la domanda...", oPh: "Opzione", cAns: "Risposta corretta:" },
-            game: { st: "COME GIOCARE?", sd: "Il laser dorato si muove velocemente. Premi il pulsante esattamente quando il laser è sulla risposta corretta!", bs: "INIZIA!", br: "GIOCA ANCORA", pr: "Domanda", hp: "PERFETTO!", hg: "BENE!", hw: "ERRORE!", hm: "MANCATO!", cmb: "COMBO", fw: "GIOCO COMPLETATO", s1: "Perfetto:", s2: "Bene:", s3: "Errori:", s4: "Combo Max:", sr: "di fila" }
-        },
-        zh: {
-            ui: { title: "🛠️ 游戏生成器", lang: "🌐 语言", design: "🎨 设计", font: "字体", color: "文本颜色", bg: "面板背景色", opacity: "不透明度:", texts: "📝 游戏文本", stTitle: "开始：标题", stDesc: "开始：描述", btnStart: "开始按钮", btnRestart: "重玩按钮", prog: "文本：第 N 题", hit: "💥 命中反馈", hitPerf: "完美", hitGood: "不错", hitWrong: "错误", hitMiss: "未命中", combo: "连击词汇", fin: "🏆 最终屏幕", finWin: "胜利文本", statRow: "后缀 '连续'", s1: "完美", s2: "不错", s3: "错误", s4: "最大连击", qSec: "❓ 问题与答案", addQ: "+ 添加问题", gen: "生成游戏 🚀", del: "删除", qPh: "输入问题...", oPh: "选项", cAns: "正确答案:" },
-            game: { st: "怎么玩？", sd: "金色激光快速移动。当激光准确指向正确答案时，按下按钮！", bs: "开始！", br: "再玩一次", pr: "问题", hp: "完美！", hg: "不错！", hw: "错误！", hm: "未命中！", cmb: "连击", fw: "游戏完成", s1: "完美:", s2: "不错:", s3: "错误:", s4: "最大连击:", sr: "连续" }
+    // НАСТРОЙКА АУДИО И МУЗЫКИ
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const bgMusic = document.getElementById('bg-music');
+    bgMusic.volume = 0.2; 
+
+    function playSound(type) {
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+        
+        bgMusic.volume = 0.05;
+
+        if (type === 'hit') { 
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(150, now);
+            osc.frequency.exponentialRampToValueAtTime(0.01, now + 0.1);
+            gainNode.gain.setValueAtTime(1, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            osc.start(now); osc.stop(now + 0.1);
+            
+            setTimeout(() => { 
+                if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; 
+            }, 300);
+
+        } else if (type === 'success') { 
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, now);
+            osc.frequency.setValueAtTime(554.37, now + 0.1);
+            osc.frequency.setValueAtTime(659.25, now + 0.2);
+            gainNode.gain.setValueAtTime(0.5, now);
+            gainNode.gain.linearRampToValueAtTime(0, now + 0.5);
+            osc.start(now); osc.stop(now + 0.5);
+            
+            setTimeout(() => { 
+                if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; 
+            }, 1500);
+
+        } else if (type === 'error') { 
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(200, now);
+            osc.frequency.linearRampToValueAtTime(100, now + 0.4);
+            gainNode.gain.setValueAtTime(0.5, now);
+            gainNode.gain.linearRampToValueAtTime(0, now + 0.4);
+            osc.start(now); osc.stop(now + 0.4);
+
+            setTimeout(() => { 
+                if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; 
+            }, 1000);
         }
+    }
+
+    // КОНФИГУРАЦИЯ
+    const gameConfig = {
+        // УМЕНЬШИЛИ СКОРОСТЬ (было 1.5, стало 0.9)
+        sliderSpeedMultiplier: 0.9, 
+        points: { perfect: 100, good: 70, wrong: -80, miss: -50 },
+        questions: [
+            { text: "Какая планета самая большая в Солнечной системе?", options: ["Земля", "Марс", "Юпитер"], correctIndex: 2 },
+            { text: "Сколько будет 7 умножить на 8?", options: ["54", "56", "64"], correctIndex: 1 },
+            { text: "В каком году человек впервые полетел в космос?", options: ["1957", "1961", "1969"], correctIndex: 1 },
+            { text: "Какой океан самый большой на Земле?", options: ["Атлантический", "Индийский", "Тихий"], correctIndex: 2 },
+            { text: "Самый твердый минерал в природе?", options: ["Кварц", "Алмаз", "Изумруд"], correctIndex: 1 },
+            { text: "Сколько материков на планете Земля?", options: ["4", "5", "6"], correctIndex: 2 },
+            { text: "Какая химическая формула у воды?", options: ["CO2", "H2O", "O2"], correctIndex: 1 },
+            { text: "Столица Австралии?", options: ["Сидней", "Мельбурн", "Канберра"], correctIndex: 2 },
+            { text: "Кто написал произведение «Муму»?", options: ["Пушкин", "Тургенев", "Толстой"], correctIndex: 1 },
+            { text: "Самая длинная река в мире?", options: ["Нил", "Амазонка", "Янцзы"], correctIndex: 1 },
+            { text: "Какой газ мы вдыхаем для жизни?", options: ["Азот", "Кислород", "Углекислый газ"], correctIndex: 1 },
+            { text: "Столица Японии?", options: ["Пекин", "Сеул", "Токио"], correctIndex: 2 }
+        ],
+        ranks: [
+            { minScore: 0, title: "Новичок" },
+            { minScore: 500, title: "Эксперт" },
+            { minScore: 1000, title: "Мастер силы!" },
+            { minScore: 2000, title: "ЛЕГЕНДА АРКАДЫ!" } 
+        ]
     };
 
-    let questionCounter = 0;
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let comboCount = 0;       
+    let comboMultiplier = 1;  
+    let gameStats = { perfect: 0, good: 0, wrong: 0, maxCombo: 0 }; 
 
-    function changeLanguage() {
-        const lang = document.getElementById('lang-select').value;
-        const u = i18n[lang].ui; const g = i18n[lang].game;
+    let animationFrameId;
+    let laserY = 0; 
+    let direction = 1; 
+    let isPlaying = false;
+    let sliderSpeed = 5 * gameConfig.sliderSpeedMultiplier;
 
-        document.getElementById('lbl-title').innerText = u.title; document.getElementById('lbl-lang-sec').innerText = u.lang;
-        document.getElementById('lbl-design-sec').innerText = u.design; document.getElementById('lbl-font').innerText = u.font;
-        document.getElementById('lbl-color').innerText = u.color; document.getElementById('lbl-bg').innerText = u.bg;
-        document.getElementById('lbl-opacity').innerText = u.opacity; document.getElementById('lbl-texts-sec').innerText = u.texts;
-        document.getElementById('lbl-start-title').innerText = u.stTitle; document.getElementById('lbl-start-desc').innerText = u.stDesc;
-        document.getElementById('lbl-btn-start').innerText = u.btnStart; document.getElementById('lbl-btn-restart').innerText = u.btnRestart;
-        document.getElementById('lbl-prog').innerText = u.prog; document.getElementById('lbl-hit-sec').innerText = u.hit;
-        document.getElementById('lbl-hit-perf').innerText = u.hitPerf; document.getElementById('lbl-hit-good').innerText = u.hitGood;
-        document.getElementById('lbl-hit-wrong').innerText = u.hitWrong; document.getElementById('lbl-hit-miss').innerText = u.hitMiss;
-        document.getElementById('lbl-combo').innerText = u.combo; document.getElementById('lbl-fin-sec').innerText = u.fin;
-        document.getElementById('lbl-fin-win').innerText = u.finWin; document.getElementById('lbl-stat-row').innerText = u.statRow;
-        document.getElementById('lbl-s1').innerText = u.s1; document.getElementById('lbl-s2').innerText = u.s2;
-        document.getElementById('lbl-s3').innerText = u.s3; document.getElementById('lbl-s4').innerText = u.s4;
-        document.getElementById('lbl-q-sec').innerText = u.qSec; document.getElementById('btn-add-q').innerText = u.addQ;
-        document.getElementById('btn-gen').innerText = u.gen;
+    const ui = {
+        progNum: document.getElementById('progress-num'),
+        progBar: document.getElementById('progress-bar'),
+        score: document.getElementById('score-display'),
+        question: document.getElementById('question-display'),
+        answersBox: document.getElementById('answers-container'),
+        track: document.getElementById('track'),
+        slider: document.getElementById('slider'),
+        machine: document.getElementById('silomer-machine'),
+        btn: document.getElementById('hammer-btn'),
+        feedback: document.getElementById('feedback-overlay'),
+        fText: document.getElementById('feedback-text'),
+        fCombo: document.getElementById('feedback-combo'), 
+        fPoints: document.getElementById('feedback-points'),
+        finalScreen: document.getElementById('final-screen'),
+        finalTitle: document.getElementById('final-title'),
+        finalScore: document.getElementById('final-score'),
+        finalRank: document.getElementById('final-rank'),
+        startScreen: document.getElementById('start-screen'),
+        startBtn: document.getElementById('start-btn'),
+        statPerfect: document.getElementById('stat-perfect'),
+        statGood: document.getElementById('stat-good'),
+        statWrong: document.getElementById('stat-wrong'),
+        statMaxCombo: document.getElementById('stat-max-combo')
+    };
 
-        document.getElementById('t-start-title').value = g.st; document.getElementById('t-start-desc').value = g.sd;
-        document.getElementById('t-btn-start').value = g.bs; document.getElementById('t-btn-restart').value = g.br;
-        document.getElementById('t-progress').value = g.pr; document.getElementById('t-hit-perfect').value = g.hp;
-        document.getElementById('t-hit-good').value = g.hg; document.getElementById('t-hit-wrong').value = g.hw;
-        document.getElementById('t-hit-miss').value = g.hm; document.getElementById('t-combo').value = g.cmb;
-        document.getElementById('t-fin-win').value = g.fw; document.getElementById('t-stat-row').value = g.sr;
-        document.getElementById('t-stat-1').value = g.s1; document.getElementById('t-stat-2').value = g.s2;
-        document.getElementById('t-stat-3').value = g.s3; document.getElementById('t-stat-4').value = g.s4;
+    function alignAnswersContainer() {
+        const trackRect = ui.track.getBoundingClientRect();
+        const rightPanelRect = document.getElementById('right-panel').getBoundingClientRect();
+        ui.answersBox.style.top = (trackRect.top - rightPanelRect.top) + 'px';
+        ui.answersBox.style.height = trackRect.height + 'px';
+    }
+    window.addEventListener('resize', alignAnswersContainer);
 
-        document.querySelectorAll('.question-block').forEach((b, idx) => {
-            b.querySelector('h4').innerText = `${u.qSec.split(' ')[0]} ${idx + 1}`;
-            b.querySelector('.remove-btn').innerText = u.del;
-            b.querySelector('.q-text').placeholder = u.qPh;
-            b.querySelector('.q-opt-0').placeholder = `${u.oPh} 1`;
-            b.querySelector('.q-opt-1').placeholder = `${u.oPh} 2`;
-            b.querySelector('.q-opt-2').placeholder = `${u.oPh} 3`;
-            const s = b.querySelector('.correct-select'); const v = s.value;
-            s.options[0].text = `${u.cAns} 1`; s.options[1].text = `${u.cAns} 2`; s.options[2].text = `${u.cAns} 3`;
-            s.value = v;
+    ui.startBtn.addEventListener('click', () => {
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        bgMusic.play().catch((e) => console.log("Браузер пока заблокировал музыку:", e));
+        ui.startScreen.style.opacity = '0';
+        setTimeout(() => {
+            ui.startScreen.style.display = 'none';
+            initGame();
+        }, 300);
+    });
+
+    // ОБРАБОТКА ПРОБЕЛА
+    window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
+            e.preventDefault(); 
+            if (!ui.btn.disabled && isPlaying) {
+                ui.btn.classList.add('pressed'); 
+                handleHit();
+            }
+        }
+    });
+    window.addEventListener('keyup', (e) => {
+        if (e.code === 'Space') {
+            ui.btn.classList.remove('pressed'); 
+        }
+    });
+
+    // ОБРАБОТКА КЛИКА И ТАЧА ПО КНОПКЕ
+    ui.btn.addEventListener('mousedown', (e) => {
+        if (!ui.btn.disabled && isPlaying) {
+            handleHit(e);
+        }
+    });
+    ui.btn.addEventListener('touchstart', (e) => {
+        if (!ui.btn.disabled && isPlaying) {
+            handleHit(e);
+        }
+    }, { passive: false });
+
+    function initGame() {
+        currentQuestionIndex = 0;
+        score = 0;
+        comboCount = 0;
+        comboMultiplier = 1;
+        gameStats = { perfect: 0, good: 0, wrong: 0, maxCombo: 0 };
+        
+        ui.score.classList.remove('combo-active');
+        ui.score.innerText = "0";
+        bgMusic.volume = 0.2;
+        ui.finalScreen.style.display = 'none';
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        if (currentQuestionIndex >= gameConfig.questions.length) { endGame(); return; }
+
+        const qData = gameConfig.questions[currentQuestionIndex];
+        
+        ui.progNum.innerText = currentQuestionIndex + 1;
+        ui.progBar.style.width = `${((currentQuestionIndex) / gameConfig.questions.length) * 100}%`;
+        ui.question.innerText = qData.text;
+
+        ui.answersBox.innerHTML = '';
+        alignAnswersContainer();
+
+        qData.options.forEach((opt, index) => {
+            const div = document.createElement('div');
+            div.className = 'answer-slot';
+            div.innerText = opt;
+            div.dataset.index = index;
+            ui.answersBox.appendChild(div);
         });
-    }
 
-    function addQuestion() {
-        questionCounter++; const lang = document.getElementById('lang-select').value; const u = i18n[lang].ui;
-        const div = document.createElement('div'); div.className = 'question-block';
-        div.innerHTML = `<h4>${u.qSec.split(' ')[0]} ${questionCounter}</h4><button class="remove-btn" onclick="this.parentElement.remove()">${u.del}</button><div class="form-group"><input type="text" class="q-text" placeholder="${u.qPh}"></div><div class="options-grid"><input type="text" class="q-opt-0" placeholder="${u.oPh} 1"><input type="text" class="q-opt-1" placeholder="${u.oPh} 2"><input type="text" class="q-opt-2" placeholder="${u.oPh} 3"></div><select class="correct-select"><option value="0">${u.cAns} 1</option><option value="1">${u.cAns} 2</option><option value="2">${u.cAns} 3</option></select>`;
-        document.getElementById('questions-wrapper').appendChild(div);
-    }
-
-    function hexToRgb(hex) {
-        let r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return r ? `${parseInt(r[1], 16)}, ${parseInt(r[2], 16)}, ${parseInt(r[3], 16)}` : "255, 255, 255";
-    }
-
-    // МАГИЯ ЗДЕСЬ: Редактор сам вычисляет ссылку на game.html
-    function generateLink() {
-        const qBlocks = document.querySelectorAll('.question-block');
-        if (qBlocks.length === 0) { alert('Добавьте хотя бы 1 вопрос!'); return; }
+        ui.btn.disabled = false;
+        ui.feedback.style.opacity = '0';
+        ui.feedback.style.backdropFilter = 'none';
         
-        const config = {
-            design: { font: document.getElementById('cfg-font').value, color: document.getElementById('cfg-color').value, bg: hexToRgb(document.getElementById('cfg-bg').value), op: document.getElementById('cfg-opacity').value / 100 },
-            questions: Array.from(qBlocks).map(b => ({ q: b.querySelector('.q-text').value, opt: [ b.querySelector('.q-opt-0').value, b.querySelector('.q-opt-1').value, b.querySelector('.q-opt-2').value ], c: parseInt(b.querySelector('.correct-select').value) })),
-            texts: { st: document.getElementById('t-start-title').value, sd: document.getElementById('t-start-desc').value, bs: document.getElementById('t-btn-start').value, br: document.getElementById('t-btn-restart').value, pr: document.getElementById('t-progress').value, hp: document.getElementById('t-hit-perfect').value, hg: document.getElementById('t-hit-good').value, hw: document.getElementById('t-hit-wrong').value, hm: document.getElementById('t-hit-miss').value, cmb: document.getElementById('t-combo').value, fw: document.getElementById('t-fin-win').value, sr: document.getElementById('t-stat-row').value, s1: document.getElementById('t-stat-1').value, s2: document.getElementById('t-stat-2').value, s3: document.getElementById('t-stat-3').value, s4: document.getElementById('t-stat-4').value }
+        laserY = 0;
+        direction = 1;
+        ui.slider.style.top = (laserY - (ui.slider.clientHeight / 2)) + 'px';
+        
+        isPlaying = true;
+        animateSlider();
+    }
+
+    function animateSlider() {
+        if (!isPlaying) return;
+
+        const trackHeight = ui.track.clientHeight;
+        laserY += sliderSpeed * direction;
+
+        if (laserY >= trackHeight) { laserY = trackHeight; direction = -1; } 
+        else if (laserY <= 0) { laserY = 0; direction = 1; }
+
+        ui.slider.style.top = (laserY - (ui.slider.clientHeight / 2)) + 'px';
+        animationFrameId = requestAnimationFrame(animateSlider);
+    }
+
+    function handleHit(e) {
+        if(e) e.preventDefault();
+        if (!isPlaying) return;
+        
+        ui.machine.classList.remove('shake-effect');
+        void ui.machine.offsetWidth; 
+        ui.machine.classList.add('shake-effect');
+
+        playSound('hit');
+        isPlaying = false;
+        cancelAnimationFrame(animationFrameId);
+        ui.btn.disabled = true;
+        checkHit();
+    }
+
+    function checkHit() {
+        const trackRect = ui.track.getBoundingClientRect();
+        const hitLineAbsoluteY = trackRect.top + laserY; 
+        
+        const slots = document.querySelectorAll('.answer-slot');
+        let hitIndex = -1;
+        let accuracy = 0;
+
+        slots.forEach((slot, index) => {
+            const rect = slot.getBoundingClientRect();
+            if (hitLineAbsoluteY >= rect.top && hitLineAbsoluteY <= rect.bottom) {
+                hitIndex = index;
+                const slotCenter = rect.top + (rect.height / 2);
+                const maxDeviation = rect.height / 2;
+                const deviation = Math.abs(slotCenter - hitLineAbsoluteY);
+                accuracy = 1 - (deviation / maxDeviation); 
+            }
+        });
+
+        processResult(hitIndex, accuracy);
+    }
+
+    function processResult(hitIndex, accuracy) {
+        const correctIndex = gameConfig.questions[currentQuestionIndex].correctIndex;
+        let pointsEarned = 0;
+        let message = "";
+        let color = "";
+        let isCorrect = (hitIndex === correctIndex);
+
+        const slots = document.querySelectorAll('.answer-slot');
+        
+        // ФИЗИЧЕСКИЙ ОТКЛИК КАРТОЧКИ 
+        if (hitIndex !== -1) {
+            slots[hitIndex].classList.add('card-smash-anim');
+        }
+
+        // ЛОГИКА КОМБО И СТАТИСТИКИ
+        if (isCorrect) {
+            comboCount++;
+            gameStats.maxCombo = Math.max(gameStats.maxCombo, comboCount);
+            comboMultiplier = Math.min(comboCount, 3); 
+        } else {
+            comboCount = 0;
+            comboMultiplier = 1;
+        }
+
+        if (hitIndex === -1) {
+            pointsEarned = gameConfig.points.miss;
+            message = "ПРОМАХ!";
+            color = "#bdc3c7"; 
+            gameStats.wrong++;
+            playSound('error');
+        } else if (isCorrect) {
+            slots[hitIndex].style.borderColor = "#2ecc71"; 
+            slots[hitIndex].style.backgroundColor = "#e8f8f5";
+            playSound('success');
+            fireConfetti(); 
+
+            if (accuracy > 0.6) { 
+                pointsEarned = gameConfig.points.perfect * comboMultiplier; 
+                message = "ИДЕАЛЬНО!";
+                color = "#2ecc71";
+                gameStats.perfect++;
+            } else { 
+                pointsEarned = gameConfig.points.good * comboMultiplier; 
+                message = "ОТЛИЧНО!";
+                color = "#f1c40f";
+                gameStats.good++;
+            }
+        } else {
+            slots[hitIndex].style.borderColor = "#e74c3c"; 
+            slots[hitIndex].style.backgroundColor = "#fdedec";
+            pointsEarned = gameConfig.points.wrong;
+            message = "ОШИБКА!";
+            color = "#e74c3c";
+            gameStats.wrong++;
+            playSound('error'); 
+        }
+
+        ui.fText.innerText = message;
+        ui.fText.style.color = color;
+        ui.fPoints.innerText = pointsEarned > 0 ? `+${pointsEarned}` : pointsEarned;
+        ui.fPoints.style.color = color;
+
+        if (comboCount >= 2) {
+            ui.fCombo.innerText = `🔥 КОМБО x${comboMultiplier} 🔥`;
+            ui.fCombo.style.display = 'block';
+            ui.score.classList.add('combo-active');
+        } else {
+            ui.fCombo.style.display = 'none';
+            ui.score.classList.remove('combo-active');
+        }
+
+        ui.feedback.style.opacity = '1';
+        ui.feedback.style.backdropFilter = 'blur(3px)';
+
+        updateScoreDisplay(pointsEarned);
+
+        setTimeout(() => {
+            currentQuestionIndex++;
+            loadQuestion();
+        }, 2000); 
+    }
+
+    function animateScore(start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const easeProgress = progress * (2 - progress); 
+            const currentScore = Math.floor(start + (end - start) * easeProgress);
+            
+            ui.score.innerText = currentScore;
+            
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                ui.score.innerText = end;
+            }
         };
-
-        // Кодируем данные в строку
-        const encodedData = encodeURIComponent(btoa(encodeURIComponent(JSON.stringify(config))));
-        
-        // Узнаем текущую ссылку редактора и меняем "editor.html" на "game.html"
-        let currentUrl = window.location.href.split('?')[0];
-        let gameUrl = currentUrl.replace('editor.html', 'game.html') + '?data=' + encodedData;
-
-        // Выводим результат
-        document.getElementById('direct-link').value = gameUrl;
-        document.getElementById('iframe-code').value = `<iframe src="${gameUrl}" width="100%" height="720px" frameborder="0" allowfullscreen style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);"></iframe>`;
-        document.getElementById('output-area').style.display = 'block';
-        
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        window.requestAnimationFrame(step);
     }
 
-    function copyCode(id) {
-        const ta = document.getElementById(id);
-        ta.select(); document.execCommand('copy');
-        alert('Скопировано!');
+    function updateScoreDisplay(points) {
+        const oldScore = score;
+        score += points;
+        if(score < 0) score = 0; 
+        
+        if(points !== 0) {
+            if (!ui.score.classList.contains('combo-active')) {
+                ui.score.classList.add('score-anim');
+                setTimeout(() => ui.score.classList.remove('score-anim'), 300);
+            }
+            animateScore(oldScore, score, 1000);
+        }
     }
 
-    window.onload = () => { changeLanguage(); addQuestion(); }
+    function fireConfetti() {
+        confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, colors: ['#ffd700', '#f1c40f', '#2ecc71', '#3498db'] });
+    }
+
+    function endGame() {
+        bgMusic.volume = 0.02; 
+        ui.progBar.style.width = '100%';
+        ui.finalScreen.style.display = 'flex';
+        ui.finalScore.innerText = score;
+        ui.score.classList.remove('combo-active'); 
+
+        ui.finalTitle.innerText = "ИГРА ЗАВЕРШЕНА";
+        ui.finalTitle.style.color = "#fff";
+        fireConfetti();
+        setTimeout(fireConfetti, 500);
+        
+        let rankStr = gameConfig.ranks[0].title;
+        for (let i = gameConfig.ranks.length - 1; i >= 0; i--) {
+            if (score >= gameConfig.ranks[i].minScore) {
+                rankStr = gameConfig.ranks[i].title;
+                break;
+            }
+        }
+        ui.finalRank.innerText = rankStr;
+
+        // ЗАПОЛНЯЕМ СТАТИСТИКУ
+        ui.statPerfect.innerText = gameStats.perfect;
+        ui.statGood.innerText = gameStats.good;
+        ui.statWrong.innerText = gameStats.wrong;
+        let maxMult = Math.min(gameStats.maxCombo, 3);
+        ui.statMaxCombo.innerText = gameStats.maxCombo > 1 ? `x${maxMult} (${gameStats.maxCombo} подряд)` : "x1";
+    }
+
+    alignAnswersContainer();
 </script>
 </body>
 </html>
