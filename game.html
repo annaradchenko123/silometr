@@ -7,11 +7,17 @@
     <!-- Библиотека для салюта -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        /* Мягкий шрифт Ubuntu */
-        @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700;900&display=swap');
+        /* Шрифты и переменные для работы Редактора */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Ubuntu:wght@400;700;900&display=swap');
+
+        :root {
+            --font-family: 'Ubuntu', sans-serif;
+            --text-color: #2c3e50;
+            --panel-bg: rgba(255, 255, 255, 0.95);
+        }
 
         body { 
-            font-family: 'Ubuntu', sans-serif; 
+            font-family: var(--font-family); 
             background-color: #000; 
             margin: 0; 
             display: flex; 
@@ -57,7 +63,7 @@
             transition: opacity 0.3s;
         }
         .start-content {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--panel-bg);
             padding: 40px 60px;
             border-radius: 30px;
             text-align: center;
@@ -67,14 +73,14 @@
         }
         .start-content h2 {
             font-size: 3rem;
-            color: #2c3e50;
+            color: var(--text-color);
             margin-top: 0;
             margin-bottom: 20px;
             text-transform: uppercase;
         }
         .start-content p {
             font-size: 1.5rem;
-            color: #34495e;
+            color: var(--text-color);
             line-height: 1.5;
             margin-bottom: 20px;
             font-weight: 700;
@@ -87,7 +93,7 @@
             border-radius: 40px;
             font-size: 2rem;
             font-weight: 700;
-            font-family: 'Ubuntu', sans-serif;
+            font-family: inherit;
             cursor: pointer;
             transition: all 0.2s;
             box-shadow: 0 8px 0 #eb4d4b;
@@ -98,23 +104,11 @@
         #start-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #eb4d4b; }
 
         /* ЛЕВАЯ ПАНЕЛЬ: Силомер */
-        #left-panel {
-            width: 35%; 
-            height: 100%;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* КАРТИНКА СИЛОМЕРА */
+        #left-panel { width: 35%; height: 100%; position: relative; z-index: 2; }
         #silomer-machine {
-            position: absolute;
-            width: 100%;
-            height: 85%;
-            bottom: 5%; 
+            position: absolute; width: 100%; height: 85%; bottom: 5%; 
             background-image: url('https://i.postimg.cc/85fWQqXv/GG-2-unit-2-3-kopia.png');
-            background-size: contain;
-            background-position: center bottom;
-            background-repeat: no-repeat;
+            background-size: contain; background-position: center bottom; background-repeat: no-repeat;
         }
 
         /* АНИМАЦИЯ ТРЯСКИ ЭКРАНА ПРИ УДАРЕ */
@@ -131,247 +125,90 @@
             90% { transform: translate(2px, 3px) rotate(0deg); }
             100% { transform: translate(0, 0) rotate(0deg); }
         }
-        .shake-effect {
-            animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
-        }
+        .shake-effect { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
 
         /* ПЛАШКА ДЛЯ ОЧКОВ */
         #score-wrapper {
-            position: absolute;
-            top: -6%; 
-            left: 50%;
-            transform: translateX(-50%);
-            width: 240px;  
-            height: 110px; 
+            position: absolute; top: -6%; left: 50%; transform: translateX(-50%);
+            width: 240px; height: 110px; 
             background-image: url('https://i.postimg.cc/RhM2zKxn/11_(14).png');
-            background-size: contain;
-            background-position: center;
-            background-repeat: no-repeat;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
+            background-size: contain; background-position: center; background-repeat: no-repeat;
+            display: flex; justify-content: center; align-items: center; z-index: 10;
         }
-
-        /* САМИ ЦИФРЫ ОЧКОВ (УМЕНЬШЕН РАЗМЕР) */
         #score-display {
-            color: #ffd700; 
-            font-weight: 900;
-            font-size: 1.8rem; 
-            text-shadow: 0 3px 6px rgba(0,0,0,0.8); 
-            transition: transform 0.2s;
-            margin-top: -2px;
+            color: #ffd700; font-weight: 900; font-size: 1.8rem; 
+            text-shadow: 0 3px 6px rgba(0,0,0,0.8); transition: transform 0.2s; margin-top: -2px;
         }
         .score-anim { transform: scale(1.3); color: #fff !important; }
 
-        /* ПУЛЬСАЦИЯ ЦИФР ПРИ АКТИВНОМ КОМБО */
         @keyframes comboPulse {
             0% { transform: scale(1); text-shadow: 0 3px 6px rgba(0,0,0,0.8); }
             50% { transform: scale(1.15); text-shadow: 0 0 20px #ff7979, 0 0 10px #f1c40f; color: #fff; }
             100% { transform: scale(1); text-shadow: 0 3px 6px rgba(0,0,0,0.8); }
         }
-        .combo-active {
-            animation: comboPulse 0.8s infinite !important;
-        }
+        .combo-active { animation: comboPulse 0.8s infinite !important; }
 
-        /* НАСТРОЙКА ШКАЛЫ */
-        #track {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 30%;      
-            height: 48%;   
-            width: 10px;
-            background: rgba(255, 255, 255, 0.05); 
-            z-index: 5;
-        }
-
-        /* КРУГЛЫЙ МИНИАТЮРНЫЙ КУРСОР */
-        #slider {
-            position: absolute;
-            box-sizing: border-box;
-            width: 24px;       
-            height: 24px;      
-            left: -7px;        
-            background: #ffd700; 
-            border-radius: 50%; 
-            border: 2px solid white;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8); 
-            z-index: 6;
-        }
-
-        /* ЛАЗЕР */
-        #slider-pointer {
-            position: absolute;
-            width: 1000px;
-            height: 3px; 
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.9) 0%, rgba(255, 215, 0, 0) 100%); 
-            top: 50%;
-            left: 100%;
-            transform: translateY(-50%);
-            pointer-events: none;
-            z-index: 1;
-        }
+        /* НАСТРОЙКА ШКАЛЫ И ЛАЗЕРА */
+        #track { position: absolute; left: 50%; transform: translateX(-50%); top: 30%; height: 48%; width: 10px; background: rgba(255, 255, 255, 0.05); z-index: 5; }
+        #slider { position: absolute; box-sizing: border-box; width: 24px; height: 24px; left: -7px; background: #ffd700; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(255, 215, 0, 0.8); z-index: 6; }
+        #slider-pointer { position: absolute; width: 1000px; height: 3px; background: linear-gradient(90deg, rgba(255, 215, 0, 0.9) 0%, rgba(255, 215, 0, 0) 100%); top: 50%; left: 100%; transform: translateY(-50%); pointer-events: none; z-index: 1; }
 
         /* КНОПКА УДАРА */
         #hammer-btn {
-            position: absolute;
-            bottom: 8%; 
-            left: 49.5%; 
-            transform: translateX(-50%);
-            width: 90px;  
-            height: 90px; 
-            background-color: transparent;
+            position: absolute; bottom: 8%; left: 49.5%; transform: translateX(-50%);
+            width: 90px; height: 90px; background-color: transparent;
             background-image: url('https://i.postimg.cc/wM6ndL8Z/11_(13).png');
-            background-size: contain;
-            background-position: center;
-            background-repeat: no-repeat;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.1s;
-            z-index: 10;
-            outline: none;
+            background-size: contain; background-position: center; background-repeat: no-repeat;
+            border: none; cursor: pointer; transition: transform 0.1s; z-index: 10; outline: none;
             -webkit-tap-highlight-color: transparent;
         }
         #hammer-btn:active, #hammer-btn.pressed { transform: translate(-50%, 8px) scale(0.95); }
         #hammer-btn:disabled { filter: grayscale(100%); cursor: not-allowed; opacity: 0.8; }
 
         /* ПРАВАЯ ПАНЕЛЬ */
-        #right-panel {
-            width: 65%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            padding: 30px 60px 40px 20px;
-            box-sizing: border-box;
-            position: relative;
-            z-index: 2;
-        }
-
+        #right-panel { width: 65%; height: 100%; display: flex; flex-direction: column; padding: 30px 60px 40px 20px; box-sizing: border-box; position: relative; z-index: 2; }
         #progress-container { width: 100%; background: rgba(0,0,0,0.5); border-radius: 10px; height: 12px; margin-bottom: 15px; border: 2px solid #555; overflow: hidden; flex-shrink: 0; }
         #progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #f1c40f, #f39c12); transition: width 0.3s ease; }
         #progress-text { text-align: right; color: #f1c40f; font-weight: 700; font-size: 1.2rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; }
 
         #question-display {
-            background-color: rgba(255, 255, 255, 0.95);
-            color: #2c3e50;
-            padding: 20px 30px;
-            border-radius: 20px;
-            font-size: 1.8rem;
-            font-weight: 700;
-            text-align: center;
-            border: 4px solid #f39c12;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            margin-bottom: 30px;
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            z-index: 10;
-            flex-shrink: 0;
+            background-color: var(--panel-bg);
+            color: var(--text-color);
+            padding: 20px 30px; border-radius: 20px; font-size: 1.8rem; font-weight: 700; text-align: center;
+            border: 4px solid #f39c12; box-shadow: 0 10px 20px rgba(0,0,0,0.2); margin-bottom: 30px;
+            min-height: 100px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; flex-shrink: 0;
         }
 
-        /* Контейнер ответов */
-        #answers-container {
-            position: absolute;
-            left: 20px;
-            width: calc(100% - 80px);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between; 
-        }
-
+        #answers-container { position: absolute; left: 20px; width: calc(100% - 80px); display: flex; flex-direction: column; justify-content: space-between; }
         .answer-slot {
-            width: 100%;
-            background-color: rgba(255, 255, 255, 0.95);
-            border: 3px solid #cbd5e1; 
-            color: #1e293b;
-            padding: 20px;
-            font-size: 1.6rem;
-            font-weight: 700;
-            border-radius: 15px;
-            text-align: center;
-            transition: all 0.2s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-            z-index: 3;
-            box-sizing: border-box;
-            transform-origin: left center; 
+            width: 100%; background-color: var(--panel-bg); border: 3px solid #cbd5e1; color: var(--text-color);
+            padding: 20px; font-size: 1.6rem; font-weight: 700; border-radius: 15px; text-align: center;
+            transition: all 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.15); z-index: 3; box-sizing: border-box; transform-origin: left center; 
         }
 
-        /* ФИЗИЧЕСКИЙ УДАР ПО КАРТОЧКЕ */
-        @keyframes cardSmash {
-            0% { transform: translateX(0) scale(1); }
-            20% { transform: translateX(20px) rotate(3deg) scale(0.95); } 
-            50% { transform: translateX(-5px) rotate(-1deg) scale(1.02); } 
-            80% { transform: translateX(2px) rotate(1deg) scale(1.05); } 
-            100% { transform: translateX(0) rotate(0deg) scale(1.05); } 
-        }
-        .card-smash-anim {
-            animation: cardSmash 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
-        }
+        @keyframes cardSmash { 0% { transform: translateX(0) scale(1); } 20% { transform: translateX(20px) rotate(3deg) scale(0.95); } 50% { transform: translateX(-5px) rotate(-1deg) scale(1.02); } 80% { transform: translateX(2px) rotate(1deg) scale(1.05); } 100% { transform: translateX(0) rotate(0deg) scale(1.05); } }
+        .card-smash-anim { animation: cardSmash 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards !important; }
 
-        /* ВСПЛЫВАЮЩИЙ ФИДБЕК ЗА УДАР */
+        /* ВСПЛЫВАЮЩИЙ ФИДБЕК */
         #feedback-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
         #feedback-text { font-size: 5rem; font-weight: 900; text-align: center; text-transform: uppercase; text-shadow: 0 4px 15px rgba(0,0,0,0.4); margin-bottom: 10px; letter-spacing: 2px; }
-        
-        /* СТИЛЬ ДЛЯ НАДПИСИ "КОМБО" */
-        #feedback-combo {
-            font-size: 3rem;
-            font-weight: 900;
-            color: #ff9f43;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            margin-bottom: 15px;
-            display: none; 
-            text-transform: uppercase;
-            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-        @keyframes popIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
+        #feedback-combo { font-size: 3rem; font-weight: 900; color: #ff9f43; text-shadow: 0 4px 10px rgba(0,0,0,0.5); margin-bottom: 15px; display: none; text-transform: uppercase; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        #feedback-points { font-size: 3.5rem; font-weight: 700; background: var(--panel-bg); color: var(--text-color); padding: 10px 40px; border-radius: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
 
-        #feedback-points { 
-            font-size: 3.5rem; 
-            font-weight: 700; 
-            background: rgba(255, 255, 255, 0.95); 
-            padding: 10px 40px; 
-            border-radius: 30px; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
-        }
-
-        /* Финальный экран и Статистика */
+        /* Финальный экран */
         #final-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 30; display: none; text-align: center; backdrop-filter: blur(5px); }
         #final-title { font-size: 4rem; font-weight: 900; margin: 0; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
         #final-score { font-size: 6rem; font-weight: 900; color: #ffd700; margin: 5px 0 0 0; text-shadow: 0 5px 20px rgba(243, 156, 18, 0.5); }
         #final-rank { color: #2ecc71; font-size: 2.5rem; text-transform: uppercase; font-weight: 700; margin-bottom: 25px;}
         
-        .stats-container {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 20px 40px;
-            border-radius: 20px;
-            margin-bottom: 30px;
-            border: 2px solid #ffd700;
-            text-align: left;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-        }
-        .stat-row {
-            color: #fff;
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin: 8px 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 280px;
-            letter-spacing: 1px;
-        }
+        .stats-container { background: rgba(0, 0, 0, 0.6); padding: 20px 40px; border-radius: 20px; margin-bottom: 30px; border: 2px solid #ffd700; text-align: left; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .stat-row { color: #fff; font-size: 1.4rem; font-weight: 700; margin: 8px 0; display: flex; align-items: center; justify-content: space-between; width: 300px; letter-spacing: 1px; }
         .stat-icon { margin-right: 15px; font-size: 1.8rem; }
         .stat-row span:last-child { color: #f1c40f; font-weight: 900; font-size: 1.8rem; }
-
-        .restart-btn { padding: 15px 50px; background-color: #ff7979; color: white; border: none; border-radius: 40px; font-size: 2rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 8px 0 #eb4d4b; text-transform: uppercase; }
-        .restart-btn:hover { transform: scale(1.05); }
-        .restart-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #eb4d4b; }
+        #restart-btn { padding: 15px 50px; background-color: #ff7979; color: white; border: none; border-radius: 40px; font-size: 2rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; box-shadow: 0 8px 0 #eb4d4b; text-transform: uppercase; }
+        #restart-btn:hover { transform: scale(1.05); }
+        #restart-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #eb4d4b; }
     </style>
 </head>
 <body>
@@ -386,9 +223,8 @@
     <!-- СТАРТОВОЕ МЕНЮ -->
     <div id="start-screen">
         <div class="start-content">
-            <h2>КАК ИГРАТЬ?</h2>
-            <p>Золотой лазер быстро бегает вверх и вниз.</p>
-            <p>Нажмите на кнопку (ИЛИ на <b>ПРОБЕЛ</b>), когда лазер окажется ровно на правильном ответе!</p>
+            <h2 id="start-title">КАК ИГРАТЬ?</h2>
+            <p id="start-desc">Золотой лазер быстро бегает вверх и вниз.<br>Нажмите на кнопку (ИЛИ на <b>ПРОБЕЛ</b>), когда лазер окажется ровно на правильном ответе!</p>
             <p style="color:#e74c3c; font-size: 1.2rem;"><i>Подсказка: Отвечайте правильно без промахов, чтобы активировать 🔥 КОМБО x2 и x3!</i></p>
             <button id="start-btn">НАЧАТЬ!</button>
         </div>
@@ -396,32 +232,23 @@
 
     <div id="left-panel">
         <div id="silomer-machine">
-            <!-- Плашка с очками -->
-            <div id="score-wrapper">
-                <div id="score-display">0</div>
-            </div>
-            
-            <div id="track">
-                <div id="slider"><div id="slider-pointer"></div></div>
-            </div>
-            
-            <!-- Кнопка удара -->
+            <div id="score-wrapper"><div id="score-display">0</div></div>
+            <div id="track"><div id="slider"><div id="slider-pointer"></div></div></div>
             <button id="hammer-btn" aria-label="Удар молотком" disabled></button>
         </div>
     </div>
 
     <div id="right-panel">
-        <div id="progress-text">Вопрос <span id="progress-num">1</span> из 12</div>
+        <div id="progress-text"><span id="lbl-prog">Вопрос</span> <span id="progress-num">1</span> / <span id="progress-total">12</span></div>
         <div id="progress-container"><div id="progress-bar"></div></div>
         
         <div id="question-display">Загрузка...</div>
         <div id="answers-container"></div>
     </div>
 
-    <!-- ВСПЛЫВАЮЩИЙ ФИДБЕК ЗА УДАР -->
     <div id="feedback-overlay">
         <div id="feedback-text"></div>
-        <div id="feedback-combo">🔥 КОМБО x2 🔥</div>
+        <div id="feedback-combo"></div>
         <div id="feedback-points"></div>
     </div>
 
@@ -431,76 +258,37 @@
         <div id="final-score">1200</div>
         <div id="final-rank">Мастер силы!</div>
         
-        <!-- СТАТИСТИКА -->
         <div class="stats-container">
-            <div class="stat-row"><span class="stat-icon">🎯</span> Идеально: <span id="stat-perfect">0</span></div>
-            <div class="stat-row"><span class="stat-icon">👍</span> Отлично: <span id="stat-good">0</span></div>
-            <div class="stat-row"><span class="stat-icon">❌</span> Ошибки: <span id="stat-wrong">0</span></div>
-            <div class="stat-row"><span class="stat-icon">🔥</span> Макс. Комбо: <span id="stat-max-combo">x1</span></div>
+            <div class="stat-row"><span class="stat-icon">🎯</span> <span id="lbl-s1">Идеально:</span> <span id="stat-perfect">0</span></div>
+            <div class="stat-row"><span class="stat-icon">👍</span> <span id="lbl-s2">Отлично:</span> <span id="stat-good">0</span></div>
+            <div class="stat-row"><span class="stat-icon">❌</span> <span id="lbl-s3">Ошибки:</span> <span id="stat-wrong">0</span></div>
+            <div class="stat-row"><span class="stat-icon">🔥</span> <span id="lbl-s4">Макс. Комбо:</span> <span id="stat-max-combo">x1</span></div>
         </div>
 
-        <button class="restart-btn" onclick="initGame()">ИГРАТЬ СНОВА</button>
+        <button id="restart-btn" onclick="initGame()">ИГРАТЬ СНОВА</button>
     </div>
 </div>
 
 <script>
-    // НАСТРОЙКА АУДИО И МУЗЫКИ
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const bgMusic = document.getElementById('bg-music');
-    bgMusic.volume = 0.2; 
+    // ---------------------------------------------------------
+    // БЛОК ЧТЕНИЯ НАСТРОЕК ОТ РЕДАКТОРА (ЧЕРЕЗ ССЫЛКУ)
+    // ---------------------------------------------------------
+    const urlParams = new URLSearchParams(window.location.search);
+    const encodedData = urlParams.get('data');
+    let customCFG = null;
 
-    function playSound(type) {
-        if(audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        osc.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        const now = audioCtx.currentTime;
-        
-        bgMusic.volume = 0.05;
-
-        if (type === 'hit') { 
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(150, now);
-            osc.frequency.exponentialRampToValueAtTime(0.01, now + 0.1);
-            gainNode.gain.setValueAtTime(1, now);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-            osc.start(now); osc.stop(now + 0.1);
-            
-            setTimeout(() => { 
-                if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; 
-            }, 300);
-
-        } else if (type === 'success') { 
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(440, now);
-            osc.frequency.setValueAtTime(554.37, now + 0.1);
-            osc.frequency.setValueAtTime(659.25, now + 0.2);
-            gainNode.gain.setValueAtTime(0.5, now);
-            gainNode.gain.linearRampToValueAtTime(0, now + 0.5);
-            osc.start(now); osc.stop(now + 0.5);
-            
-            setTimeout(() => { 
-                if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; 
-            }, 1500);
-
-        } else if (type === 'error') { 
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(200, now);
-            osc.frequency.linearRampToValueAtTime(100, now + 0.4);
-            gainNode.gain.setValueAtTime(0.5, now);
-            gainNode.gain.linearRampToValueAtTime(0, now + 0.4);
-            osc.start(now); osc.stop(now + 0.4);
-
-            setTimeout(() => { 
-                if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; 
-            }, 1000);
+    if (encodedData) {
+        try {
+            customCFG = JSON.parse(decodeURIComponent(atob(decodeURIComponent(encodedData))));
+        } catch (e) {
+            console.error("Ошибка чтения данных из ссылки. Загружены базовые вопросы.");
         }
     }
 
-    // КОНФИГУРАЦИЯ
-    const gameConfig = {
-        // УМЕНЬШИЛИ СКОРОСТЬ (было 1.5, стало 0.9)
+    // ---------------------------------------------------------
+    // БАЗОВАЯ КОНФИГУРАЦИЯ ИГРЫ (если открыли без редактора)
+    // ---------------------------------------------------------
+    let gameConfig = {
         sliderSpeedMultiplier: 0.9, 
         points: { perfect: 100, good: 70, wrong: -80, miss: -50 },
         questions: [
@@ -522,45 +310,100 @@
             { minScore: 500, title: "Эксперт" },
             { minScore: 1000, title: "Мастер силы!" },
             { minScore: 2000, title: "ЛЕГЕНДА АРКАДЫ!" } 
-        ]
+        ],
+        texts: {
+            st: "КАК ИГРАТЬ?", sd: "Золотой лазер быстро бегает вверх и вниз.<br>Нажмите на кнопку (ИЛИ на <b>ПРОБЕЛ</b>), когда лазер окажется ровно на правильном ответе!",
+            bs: "НАЧАТЬ!", br: "ИГРАТЬ СНОВА", pr: "Вопрос", hp: "ИДЕАЛЬНО!", hg: "ОТЛИЧНО!", hw: "ОШИБКА!", hm: "ПРОМАХ!", cmb: "КОМБО", fw: "ИГРА ЗАВЕРШЕНА", sr: "подряд",
+            s1: "Идеально:", s2: "Отлично:", s3: "Ошибки:", s4: "Макс. Комбо:"
+        }
     };
 
-    let currentQuestionIndex = 0;
-    let score = 0;
-    let comboCount = 0;       
-    let comboMultiplier = 1;  
-    let gameStats = { perfect: 0, good: 0, wrong: 0, maxCombo: 0 }; 
+    // ---------------------------------------------------------
+    // ПРИМЕНЕНИЕ НАСТРОЕК ОТ РЕДАКТОРА
+    // ---------------------------------------------------------
+    if (customCFG) {
+        if (customCFG.questions && customCFG.questions.length > 0) {
+            gameConfig.questions = customCFG.questions.map(q => ({
+                text: q.q,
+                options: q.opt,
+                correctIndex: q.c
+            }));
+        }
+        if (customCFG.texts) {
+            gameConfig.texts = customCFG.texts;
+        }
+        if (customCFG.design) {
+            document.documentElement.style.setProperty('--font-family', customCFG.design.font);
+            document.documentElement.style.setProperty('--text-color', customCFG.design.color);
+            document.documentElement.style.setProperty('--panel-bg', `rgba(${customCFG.design.bg}, ${customCFG.design.op})`);
+        }
+    }
 
-    let animationFrameId;
-    let laserY = 0; 
-    let direction = 1; 
-    let isPlaying = false;
+    // Применяем тексты интерфейса
+    document.getElementById('start-title').innerText = gameConfig.texts.st;
+    document.getElementById('start-desc').innerHTML = gameConfig.texts.sd;
+    document.getElementById('start-btn').innerText = gameConfig.texts.bs;
+    document.getElementById('lbl-prog').innerText = gameConfig.texts.pr;
+    document.getElementById('progress-total').innerText = gameConfig.questions.length;
+    document.getElementById('final-title').innerText = gameConfig.texts.fw;
+    document.getElementById('restart-btn').innerText = gameConfig.texts.br;
+    
+    document.getElementById('lbl-s1').innerText = gameConfig.texts.s1;
+    document.getElementById('lbl-s2').innerText = gameConfig.texts.s2;
+    document.getElementById('lbl-s3').innerText = gameConfig.texts.s3;
+    document.getElementById('lbl-s4').innerText = gameConfig.texts.s4;
+
+    // ---------------------------------------------------------
+    // ИГРОВАЯ ЛОГИКА
+    // ---------------------------------------------------------
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const bgMusic = document.getElementById('bg-music');
+    bgMusic.volume = 0.2; 
+
+    function playSound(type) {
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+        bgMusic.volume = 0.05;
+
+        if (type === 'hit') { 
+            osc.type = 'square'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(0.01, now + 0.1);
+            gainNode.gain.setValueAtTime(1, now); gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            osc.start(now); osc.stop(now + 0.1);
+            setTimeout(() => { if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; }, 300);
+        } else if (type === 'success') { 
+            osc.type = 'sine'; osc.frequency.setValueAtTime(440, now); osc.frequency.setValueAtTime(554.37, now + 0.1); osc.frequency.setValueAtTime(659.25, now + 0.2);
+            gainNode.gain.setValueAtTime(0.5, now); gainNode.gain.linearRampToValueAtTime(0, now + 0.5);
+            osc.start(now); osc.stop(now + 0.5);
+            setTimeout(() => { if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; }, 1500);
+        } else if (type === 'error') { 
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, now); osc.frequency.linearRampToValueAtTime(100, now + 0.4);
+            gainNode.gain.setValueAtTime(0.5, now); gainNode.gain.linearRampToValueAtTime(0, now + 0.4);
+            osc.start(now); osc.stop(now + 0.4);
+            setTimeout(() => { if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; }, 1000);
+        }
+    }
+
+    let currentQuestionIndex = 0; let score = 0; let comboCount = 0; let comboMultiplier = 1;  
+    let gameStats = { perfect: 0, good: 0, wrong: 0, maxCombo: 0 }; 
+    let animationFrameId; let laserY = 0; let direction = 1; let isPlaying = false;
     let sliderSpeed = 5 * gameConfig.sliderSpeedMultiplier;
 
     const ui = {
-        progNum: document.getElementById('progress-num'),
-        progBar: document.getElementById('progress-bar'),
-        score: document.getElementById('score-display'),
-        question: document.getElementById('question-display'),
-        answersBox: document.getElementById('answers-container'),
-        track: document.getElementById('track'),
-        slider: document.getElementById('slider'),
-        machine: document.getElementById('silomer-machine'),
-        btn: document.getElementById('hammer-btn'),
-        feedback: document.getElementById('feedback-overlay'),
-        fText: document.getElementById('feedback-text'),
-        fCombo: document.getElementById('feedback-combo'), 
-        fPoints: document.getElementById('feedback-points'),
-        finalScreen: document.getElementById('final-screen'),
-        finalTitle: document.getElementById('final-title'),
-        finalScore: document.getElementById('final-score'),
-        finalRank: document.getElementById('final-rank'),
-        startScreen: document.getElementById('start-screen'),
-        startBtn: document.getElementById('start-btn'),
-        statPerfect: document.getElementById('stat-perfect'),
-        statGood: document.getElementById('stat-good'),
-        statWrong: document.getElementById('stat-wrong'),
-        statMaxCombo: document.getElementById('stat-max-combo')
+        progNum: document.getElementById('progress-num'), progBar: document.getElementById('progress-bar'),
+        score: document.getElementById('score-display'), question: document.getElementById('question-display'),
+        answersBox: document.getElementById('answers-container'), track: document.getElementById('track'),
+        slider: document.getElementById('slider'), machine: document.getElementById('silomer-machine'),
+        btn: document.getElementById('hammer-btn'), feedback: document.getElementById('feedback-overlay'),
+        fText: document.getElementById('feedback-text'), fCombo: document.getElementById('feedback-combo'), 
+        fPoints: document.getElementById('feedback-points'), finalScreen: document.getElementById('final-screen'),
+        finalTitle: document.getElementById('final-title'), finalScore: document.getElementById('final-score'),
+        finalRank: document.getElementById('final-rank'), startScreen: document.getElementById('start-screen'),
+        startBtn: document.getElementById('start-btn'), statPerfect: document.getElementById('stat-perfect'),
+        statGood: document.getElementById('stat-good'), statWrong: document.getElementById('stat-wrong'), statMaxCombo: document.getElementById('stat-max-combo')
     };
 
     function alignAnswersContainer() {
@@ -573,123 +416,58 @@
 
     ui.startBtn.addEventListener('click', () => {
         if(audioCtx.state === 'suspended') audioCtx.resume();
-        bgMusic.play().catch((e) => console.log("Браузер пока заблокировал музыку:", e));
+        bgMusic.play().catch((e) => console.log("Музыка заблокирована", e));
         ui.startScreen.style.opacity = '0';
-        setTimeout(() => {
-            ui.startScreen.style.display = 'none';
-            initGame();
-        }, 300);
+        setTimeout(() => { ui.startScreen.style.display = 'none'; initGame(); }, 300);
     });
 
-    // ОБРАБОТКА ПРОБЕЛА
-    window.addEventListener('keydown', (e) => {
-        if (e.code === 'Space') {
-            e.preventDefault(); 
-            if (!ui.btn.disabled && isPlaying) {
-                ui.btn.classList.add('pressed'); 
-                handleHit();
-            }
-        }
-    });
-    window.addEventListener('keyup', (e) => {
-        if (e.code === 'Space') {
-            ui.btn.classList.remove('pressed'); 
-        }
-    });
-
-    // ОБРАБОТКА КЛИКА И ТАЧА ПО КНОПКЕ
-    ui.btn.addEventListener('mousedown', (e) => {
-        if (!ui.btn.disabled && isPlaying) {
-            handleHit(e);
-        }
-    });
-    ui.btn.addEventListener('touchstart', (e) => {
-        if (!ui.btn.disabled && isPlaying) {
-            handleHit(e);
-        }
-    }, { passive: false });
+    window.addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); if (!ui.btn.disabled && isPlaying) { ui.btn.classList.add('pressed'); handleHit(); } } });
+    window.addEventListener('keyup', (e) => { if (e.code === 'Space') ui.btn.classList.remove('pressed'); });
+    ui.btn.addEventListener('mousedown', (e) => { if (!ui.btn.disabled && isPlaying) handleHit(e); });
+    ui.btn.addEventListener('touchstart', (e) => { if (!ui.btn.disabled && isPlaying) handleHit(e); }, { passive: false });
 
     function initGame() {
-        currentQuestionIndex = 0;
-        score = 0;
-        comboCount = 0;
-        comboMultiplier = 1;
-        gameStats = { perfect: 0, good: 0, wrong: 0, maxCombo: 0 };
-        
-        ui.score.classList.remove('combo-active');
-        ui.score.innerText = "0";
-        bgMusic.volume = 0.2;
-        ui.finalScreen.style.display = 'none';
+        currentQuestionIndex = 0; score = 0; comboCount = 0; comboMultiplier = 1; gameStats = { perfect: 0, good: 0, wrong: 0, maxCombo: 0 };
+        ui.score.classList.remove('combo-active'); ui.score.innerText = "0"; bgMusic.volume = 0.2; ui.finalScreen.style.display = 'none';
         loadQuestion();
     }
 
     function loadQuestion() {
         if (currentQuestionIndex >= gameConfig.questions.length) { endGame(); return; }
-
         const qData = gameConfig.questions[currentQuestionIndex];
         
         ui.progNum.innerText = currentQuestionIndex + 1;
         ui.progBar.style.width = `${((currentQuestionIndex) / gameConfig.questions.length) * 100}%`;
         ui.question.innerText = qData.text;
 
-        ui.answersBox.innerHTML = '';
-        alignAnswersContainer();
-
+        ui.answersBox.innerHTML = ''; alignAnswersContainer();
         qData.options.forEach((opt, index) => {
-            const div = document.createElement('div');
-            div.className = 'answer-slot';
-            div.innerText = opt;
-            div.dataset.index = index;
+            const div = document.createElement('div'); div.className = 'answer-slot'; div.innerText = opt; div.dataset.index = index;
             ui.answersBox.appendChild(div);
         });
 
-        ui.btn.disabled = false;
-        ui.feedback.style.opacity = '0';
-        ui.feedback.style.backdropFilter = 'none';
-        
-        laserY = 0;
-        direction = 1;
-        ui.slider.style.top = (laserY - (ui.slider.clientHeight / 2)) + 'px';
-        
-        isPlaying = true;
-        animateSlider();
+        ui.btn.disabled = false; ui.feedback.style.opacity = '0'; ui.feedback.style.backdropFilter = 'none';
+        laserY = 0; direction = 1; ui.slider.style.top = (laserY - (ui.slider.clientHeight / 2)) + 'px';
+        isPlaying = true; animateSlider();
     }
 
     function animateSlider() {
         if (!isPlaying) return;
-
-        const trackHeight = ui.track.clientHeight;
-        laserY += sliderSpeed * direction;
-
-        if (laserY >= trackHeight) { laserY = trackHeight; direction = -1; } 
-        else if (laserY <= 0) { laserY = 0; direction = 1; }
-
+        const trackHeight = ui.track.clientHeight; laserY += sliderSpeed * direction;
+        if (laserY >= trackHeight) { laserY = trackHeight; direction = -1; } else if (laserY <= 0) { laserY = 0; direction = 1; }
         ui.slider.style.top = (laserY - (ui.slider.clientHeight / 2)) + 'px';
         animationFrameId = requestAnimationFrame(animateSlider);
     }
 
     function handleHit(e) {
-        if(e) e.preventDefault();
-        if (!isPlaying) return;
-        
-        ui.machine.classList.remove('shake-effect');
-        void ui.machine.offsetWidth; 
-        ui.machine.classList.add('shake-effect');
-
-        playSound('hit');
-        isPlaying = false;
-        cancelAnimationFrame(animationFrameId);
-        ui.btn.disabled = true;
-        checkHit();
+        if(e) e.preventDefault(); if (!isPlaying) return;
+        ui.machine.classList.remove('shake-effect'); void ui.machine.offsetWidth; ui.machine.classList.add('shake-effect');
+        playSound('hit'); isPlaying = false; cancelAnimationFrame(animationFrameId); ui.btn.disabled = true; checkHit();
     }
 
     function checkHit() {
-        const trackRect = ui.track.getBoundingClientRect();
-        const hitLineAbsoluteY = trackRect.top + laserY; 
-        
-        const slots = document.querySelectorAll('.answer-slot');
-        let hitIndex = -1;
-        let accuracy = 0;
+        const trackRect = ui.track.getBoundingClientRect(); const hitLineAbsoluteY = trackRect.top + laserY; 
+        const slots = document.querySelectorAll('.answer-slot'); let hitIndex = -1; let accuracy = 0;
 
         slots.forEach((slot, index) => {
             const rect = slot.getBoundingClientRect();
@@ -697,94 +475,39 @@
                 hitIndex = index;
                 const slotCenter = rect.top + (rect.height / 2);
                 const maxDeviation = rect.height / 2;
-                const deviation = Math.abs(slotCenter - hitLineAbsoluteY);
-                accuracy = 1 - (deviation / maxDeviation); 
+                accuracy = 1 - (Math.abs(slotCenter - hitLineAbsoluteY) / maxDeviation); 
             }
         });
-
         processResult(hitIndex, accuracy);
     }
 
     function processResult(hitIndex, accuracy) {
         const correctIndex = gameConfig.questions[currentQuestionIndex].correctIndex;
-        let pointsEarned = 0;
-        let message = "";
-        let color = "";
-        let isCorrect = (hitIndex === correctIndex);
-
+        let pointsEarned = 0; let message = ""; let color = ""; let isCorrect = (hitIndex === correctIndex);
         const slots = document.querySelectorAll('.answer-slot');
         
-        // ФИЗИЧЕСКИЙ ОТКЛИК КАРТОЧКИ 
-        if (hitIndex !== -1) {
-            slots[hitIndex].classList.add('card-smash-anim');
-        }
+        if (hitIndex !== -1) slots[hitIndex].classList.add('card-smash-anim');
 
-        // ЛОГИКА КОМБО И СТАТИСТИКИ
-        if (isCorrect) {
-            comboCount++;
-            gameStats.maxCombo = Math.max(gameStats.maxCombo, comboCount);
-            comboMultiplier = Math.min(comboCount, 3); 
-        } else {
-            comboCount = 0;
-            comboMultiplier = 1;
-        }
+        if (isCorrect) { comboCount++; gameStats.maxCombo = Math.max(gameStats.maxCombo, comboCount); comboMultiplier = Math.min(comboCount, 3); } 
+        else { comboCount = 0; comboMultiplier = 1; }
 
         if (hitIndex === -1) {
-            pointsEarned = gameConfig.points.miss;
-            message = "ПРОМАХ!";
-            color = "#bdc3c7"; 
-            gameStats.wrong++;
-            playSound('error');
+            pointsEarned = gameConfig.points.miss; message = gameConfig.texts.hm; color = "#bdc3c7"; gameStats.wrong++; playSound('error');
         } else if (isCorrect) {
-            slots[hitIndex].style.borderColor = "#2ecc71"; 
-            slots[hitIndex].style.backgroundColor = "#e8f8f5";
-            playSound('success');
-            fireConfetti(); 
-
-            if (accuracy > 0.6) { 
-                pointsEarned = gameConfig.points.perfect * comboMultiplier; 
-                message = "ИДЕАЛЬНО!";
-                color = "#2ecc71";
-                gameStats.perfect++;
-            } else { 
-                pointsEarned = gameConfig.points.good * comboMultiplier; 
-                message = "ОТЛИЧНО!";
-                color = "#f1c40f";
-                gameStats.good++;
-            }
+            slots[hitIndex].style.borderColor = "#2ecc71"; slots[hitIndex].style.backgroundColor = "#e8f8f5"; playSound('success'); fireConfetti(); 
+            if (accuracy > 0.6) { pointsEarned = gameConfig.points.perfect * comboMultiplier; message = gameConfig.texts.hp; color = "#2ecc71"; gameStats.perfect++; } 
+            else { pointsEarned = gameConfig.points.good * comboMultiplier; message = gameConfig.texts.hg; color = "#f1c40f"; gameStats.good++; }
         } else {
-            slots[hitIndex].style.borderColor = "#e74c3c"; 
-            slots[hitIndex].style.backgroundColor = "#fdedec";
-            pointsEarned = gameConfig.points.wrong;
-            message = "ОШИБКА!";
-            color = "#e74c3c";
-            gameStats.wrong++;
-            playSound('error'); 
+            slots[hitIndex].style.borderColor = "#e74c3c"; slots[hitIndex].style.backgroundColor = "#fdedec"; pointsEarned = gameConfig.points.wrong; message = gameConfig.texts.hw; color = "#e74c3c"; gameStats.wrong++; playSound('error'); 
         }
 
-        ui.fText.innerText = message;
-        ui.fText.style.color = color;
-        ui.fPoints.innerText = pointsEarned > 0 ? `+${pointsEarned}` : pointsEarned;
-        ui.fPoints.style.color = color;
+        ui.fText.innerText = message; ui.fText.style.color = color; ui.fPoints.innerText = pointsEarned > 0 ? `+${pointsEarned}` : pointsEarned; ui.fPoints.style.color = color;
 
-        if (comboCount >= 2) {
-            ui.fCombo.innerText = `🔥 КОМБО x${comboMultiplier} 🔥`;
-            ui.fCombo.style.display = 'block';
-            ui.score.classList.add('combo-active');
-        } else {
-            ui.fCombo.style.display = 'none';
-            ui.score.classList.remove('combo-active');
-        }
+        if (comboCount >= 2) { ui.fCombo.innerText = `🔥 ${gameConfig.texts.cmb} x${comboMultiplier} 🔥`; ui.fCombo.style.display = 'block'; ui.score.classList.add('combo-active'); } 
+        else { ui.fCombo.style.display = 'none'; ui.score.classList.remove('combo-active'); }
 
-        ui.feedback.style.opacity = '1';
-        ui.feedback.style.backdropFilter = 'blur(3px)';
-
-        updateScoreDisplay(pointsEarned);
-
-        setTimeout(() => {
-            currentQuestionIndex++;
-            loadQuestion();
-        }, 2000); 
+        ui.feedback.style.opacity = '1'; ui.feedback.style.backdropFilter = 'blur(3px)'; updateScoreDisplay(pointsEarned);
+        setTimeout(() => { currentQuestionIndex++; loadQuestion(); }, 2000); 
     }
 
     function animateScore(start, end, duration) {
@@ -792,65 +515,30 @@
         const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp;
             const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            const easeProgress = progress * (2 - progress); 
-            const currentScore = Math.floor(start + (end - start) * easeProgress);
-            
-            ui.score.innerText = currentScore;
-            
-            if (progress < 1) {
-                window.requestAnimationFrame(step);
-            } else {
-                ui.score.innerText = end;
-            }
+            ui.score.innerText = Math.floor(start + (end - start) * (progress * (2 - progress)));
+            if (progress < 1) window.requestAnimationFrame(step); else ui.score.innerText = end;
         };
         window.requestAnimationFrame(step);
     }
 
     function updateScoreDisplay(points) {
-        const oldScore = score;
-        score += points;
-        if(score < 0) score = 0; 
-        
-        if(points !== 0) {
-            if (!ui.score.classList.contains('combo-active')) {
-                ui.score.classList.add('score-anim');
-                setTimeout(() => ui.score.classList.remove('score-anim'), 300);
-            }
-            animateScore(oldScore, score, 1000);
-        }
+        const oldScore = score; score += points; if(score < 0) score = 0; 
+        if(points !== 0) { if (!ui.score.classList.contains('combo-active')) { ui.score.classList.add('score-anim'); setTimeout(() => ui.score.classList.remove('score-anim'), 300); } animateScore(oldScore, score, 1000); }
     }
 
-    function fireConfetti() {
-        confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, colors: ['#ffd700', '#f1c40f', '#2ecc71', '#3498db'] });
-    }
+    function fireConfetti() { confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, colors: ['#ffd700', '#f1c40f', '#2ecc71', '#3498db'] }); }
 
     function endGame() {
-        bgMusic.volume = 0.02; 
-        ui.progBar.style.width = '100%';
-        ui.finalScreen.style.display = 'flex';
-        ui.finalScore.innerText = score;
-        ui.score.classList.remove('combo-active'); 
-
-        ui.finalTitle.innerText = "ИГРА ЗАВЕРШЕНА";
-        ui.finalTitle.style.color = "#fff";
-        fireConfetti();
-        setTimeout(fireConfetti, 500);
+        bgMusic.volume = 0.02; ui.progBar.style.width = '100%'; ui.finalScreen.style.display = 'flex'; ui.finalScore.innerText = score; ui.score.classList.remove('combo-active'); 
+        fireConfetti(); setTimeout(fireConfetti, 500);
         
         let rankStr = gameConfig.ranks[0].title;
-        for (let i = gameConfig.ranks.length - 1; i >= 0; i--) {
-            if (score >= gameConfig.ranks[i].minScore) {
-                rankStr = gameConfig.ranks[i].title;
-                break;
-            }
-        }
+        for (let i = gameConfig.ranks.length - 1; i >= 0; i--) { if (score >= gameConfig.ranks[i].minScore) { rankStr = gameConfig.ranks[i].title; break; } }
         ui.finalRank.innerText = rankStr;
 
-        // ЗАПОЛНЯЕМ СТАТИСТИКУ
-        ui.statPerfect.innerText = gameStats.perfect;
-        ui.statGood.innerText = gameStats.good;
-        ui.statWrong.innerText = gameStats.wrong;
+        ui.statPerfect.innerText = gameStats.perfect; ui.statGood.innerText = gameStats.good; ui.statWrong.innerText = gameStats.wrong;
         let maxMult = Math.min(gameStats.maxCombo, 3);
-        ui.statMaxCombo.innerText = gameStats.maxCombo > 1 ? `x${maxMult} (${gameStats.maxCombo} подряд)` : "x1";
+        ui.statMaxCombo.innerText = gameStats.maxCombo > 1 ? `x${maxMult} (${gameStats.maxCombo} ${gameConfig.texts.sr})` : "x1";
     }
 
     alignAnswersContainer();
