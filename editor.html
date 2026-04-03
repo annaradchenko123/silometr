@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Конструктор Игры: Силомер</title>
+    <title>Arcade Game Maker</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -40,45 +40,50 @@
 <body>
 
 <div class="container">
-    <h1>🛠️ Конструктор Силомера</h1>
+    <h1 id="ui-title">🛠️ Конструктор Силомера</h1>
 
     <!-- ПРЕСЕТЫ ЯЗЫКОВ -->
     <div class="section">
-        <h2>🌐 Язык интерфейса (Пресеты)</h2>
+        <h2 id="ui-h-lang">🌐 Язык интерфейса</h2>
         <div class="form-group">
             <select id="lang-select" onchange="applyLangPreset()">
-                <option value="ru">Русский</option>
-                <option value="en">English</option>
+                <option value="ru">🇷🇺 Русский</option>
+                <option value="en">🇬🇧 English</option>
+                <option value="es">🇪🇸 Español</option>
+                <option value="de">🇩🇪 Deutsch</option>
+                <option value="fr">🇫🇷 Français</option>
+                <option value="it">🇮🇹 Italiano</option>
+                <option value="zh">🇨🇳 中文</option>
             </select>
         </div>
     </div>
 
     <!-- ДИЗАЙН -->
     <div class="section">
-        <h2>🎨 Дизайн и Шрифты</h2>
+        <h2 id="ui-h-design">🎨 Дизайн и Шрифты</h2>
         <div class="row">
             <div class="col">
-                <label>Шрифт (Google Fonts)</label>
+                <label id="ui-l-font">Шрифт</label>
                 <select id="font-family">
-                    <option value="'Ubuntu', sans-serif">Ubuntu (По умолчанию)</option>
+                    <option value="'Ubuntu', sans-serif">Ubuntu</option>
                     <option value="'Montserrat', sans-serif">Montserrat</option>
-                    <option value="'Comic Sans MS', cursive">Comic Sans (Веселый)</option>
-                    <option value="'Courier New', Courier, monospace">Courier (Ретро)</option>
+                    <option value="'Comic Sans MS', cursive">Comic Sans</option>
+                    <option value="'Courier New', Courier, monospace">Courier</option>
                 </select>
             </div>
             <div class="col">
-                <label>Цвет текста (HEX)</label>
+                <label id="ui-l-color">Цвет текста</label>
                 <input type="color" id="text-color" value="#2c3e50">
             </div>
         </div>
         <br>
         <div class="row">
             <div class="col">
-                <label>Цвет плашек (Вопросы/Ответы)</label>
+                <label id="ui-l-bg">Цвет плашек</label>
                 <input type="color" id="panel-color" value="#ffffff">
             </div>
             <div class="col">
-                <label>Прозрачность плашек: <span id="opacity-val">95</span>%</label>
+                <label><span id="ui-l-opacity">Прозрачность:</span> <span id="opacity-val">95</span>%</label>
                 <input type="range" id="panel-opacity" min="50" max="100" value="95" style="width:100%" oninput="document.getElementById('opacity-val').innerText = this.value">
             </div>
         </div>
@@ -86,81 +91,77 @@
 
     <!-- ТЕКСТЫ ИНТЕРФЕЙСА -->
     <div class="section">
-        <h2>📝 Тексты интерфейса</h2>
+        <h2 id="ui-h-texts">📝 Тексты интерфейса</h2>
         <div class="form-group">
-            <label>Стартовый экран: Заголовок</label>
-            <input type="text" id="t-start-title" value="КАК ИГРАТЬ?">
+            <label id="ui-l-st">Стартовый экран: Заголовок</label>
+            <input type="text" id="t-start-title">
         </div>
         <div class="form-group">
-            <label>Стартовый экран: Описание</label>
-            <textarea id="t-start-desc" rows="2">Золотой лазер быстро бегает вверх и вниз. Нажмите на кнопку (ИЛИ на ПРОБЕЛ), когда лазер окажется ровно на правильном ответе!</textarea>
+            <label id="ui-l-sd">Стартовый экран: Описание</label>
+            <textarea id="t-start-desc" rows="2"></textarea>
         </div>
         <div class="row">
-            <div class="col"><label>Кнопка СТАРТ</label><input type="text" id="t-btn-start" value="НАЧАТЬ!"></div>
-            <div class="col"><label>Кнопка РЕСТАРТ</label><input type="text" id="t-btn-restart" value="ИГРАТЬ СНОВА"></div>
+            <div class="col"><label id="ui-l-bs">Кнопка СТАРТ</label><input type="text" id="t-btn-start"></div>
+            <div class="col"><label id="ui-l-br">Кнопка РЕСТАРТ</label><input type="text" id="t-btn-restart"></div>
         </div>
         <br>
         <div class="row">
-            <div class="col"><label>Текст: Вопрос N из M</label><input type="text" id="t-progress" value="Вопрос"></div>
+            <div class="col"><label id="ui-l-pr">Текст: Вопрос N из M</label><input type="text" id="t-progress"></div>
         </div>
     </div>
 
     <!-- ФИДБЕК УДАРОВ -->
     <div class="section">
-        <h2>💥 Тексты реакции на удар</h2>
+        <h2 id="ui-h-hit">💥 Тексты реакции на удар</h2>
         <div class="row">
-            <div class="col"><label>Идеально (>60% точности)</label><input type="text" id="t-hit-perfect" value="ИДЕАЛЬНО!"></div>
-            <div class="col"><label>Отлично (<60% точности)</label><input type="text" id="t-hit-good" value="ОТЛИЧНО!"></div>
+            <div class="col"><label id="ui-l-hp">Идеально</label><input type="text" id="t-hit-perfect"></div>
+            <div class="col"><label id="ui-l-hg">Отлично</label><input type="text" id="t-hit-good"></div>
         </div>
         <br>
         <div class="row">
-            <div class="col"><label>Ошибка (Не тот ответ)</label><input type="text" id="t-hit-wrong" value="ОШИБКА!"></div>
-            <div class="col"><label>Промах (Мимо всех)</label><input type="text" id="t-hit-miss" value="ПРОМАХ!"></div>
-            <div class="col"><label>Слово: КОМБО</label><input type="text" id="t-combo" value="КОМБО"></div>
+            <div class="col"><label id="ui-l-hw">Ошибка</label><input type="text" id="t-hit-wrong"></div>
+            <div class="col"><label id="ui-l-hm">Промах</label><input type="text" id="t-hit-miss"></div>
+            <div class="col"><label id="ui-l-cmb">Слово: КОМБО</label><input type="text" id="t-combo"></div>
         </div>
     </div>
 
     <!-- ФИНАЛЬНЫЙ ЭКРАН -->
     <div class="section">
-        <h2>🏆 Финальный экран</h2>
+        <h2 id="ui-h-fin">🏆 Финальный экран</h2>
         <div class="row">
-            <div class="col"><label>Победа (Прошел всё)</label><input type="text" id="t-fin-win" value="ИГРА ЗАВЕРШЕНА"></div>
-            <div class="col"><label>Поражение (Кончились жизни)</label><input type="text" id="t-fin-lose" value="ИГРА ОКОНЧЕНА"></div>
+            <div class="col"><label id="ui-l-fw">Победа</label><input type="text" id="t-fin-win"></div>
+            <div class="col"><label id="ui-l-fl">Поражение</label><input type="text" id="t-fin-lose"></div>
         </div>
         <br>
         <div class="row">
-            <div class="col"><label>Статистика: Идеально</label><input type="text" id="t-stat-1" value="Идеально:"></div>
-            <div class="col"><label>Статистика: Отлично</label><input type="text" id="t-stat-2" value="Отлично:"></div>
-            <div class="col"><label>Статистика: Ошибки</label><input type="text" id="t-stat-3" value="Ошибки:"></div>
-            <div class="col"><label>Статистика: Макс Комбо</label><input type="text" id="t-stat-4" value="Макс. Комбо:"></div>
+            <div class="col"><label id="ui-l-s1">Идеально</label><input type="text" id="t-stat-1"></div>
+            <div class="col"><label id="ui-l-s2">Отлично</label><input type="text" id="t-stat-2"></div>
+            <div class="col"><label id="ui-l-s3">Ошибки</label><input type="text" id="t-stat-3"></div>
+            <div class="col"><label id="ui-l-s4">Макс Комбо</label><input type="text" id="t-stat-4"></div>
         </div>
         <div class="form-group" style="margin-top:10px;">
-            <label>Приписка "подряд" (например: 4 подряд)</label>
-            <input type="text" id="t-stat-row" value="подряд">
+            <label id="ui-l-sr">Приписка "подряд"</label>
+            <input type="text" id="t-stat-row">
         </div>
     </div>
 
     <!-- ВОПРОСЫ -->
     <div class="section">
-        <h2>❓ Вопросы и ответы (Минимум 1)</h2>
-        <div id="questions-container">
-            <!-- Вопросы добавляются сюда JS -->
-        </div>
-        <button class="btn-add" onclick="addQuestionBlock()">+ ДОБАВИТЬ ВОПРОС</button>
+        <h2 id="ui-h-qsec">❓ Вопросы и ответы</h2>
+        <div id="questions-container"></div>
+        <button class="btn-add" id="ui-btn-add" onclick="addQuestionBlock()">+ ДОБАВИТЬ ВОПРОС</button>
     </div>
 
-    <button class="btn-generate" onclick="generateIframe()">Сгенерировать код для Genially 🚀</button>
+    <button class="btn-generate" id="ui-btn-gen" onclick="generateIframe()">Сгенерировать код 🚀</button>
 
     <div id="output-area">
-        <h2>Код Iframe (Скопируйте и вставьте)</h2>
+        <h2>Iframe Code</h2>
         <textarea id="iframe-code" readonly></textarea>
-        <button class="copy-btn" onclick="copyCode()">📋 Скопировать код</button>
+        <button class="copy-btn" onclick="copyCode()">📋 Copy</button>
     </div>
 </div>
 
-<!-- ========================================== -->
-<!-- СКРЫТЫЙ ШАБЛОН САМОЙ ИГРЫ -->
-<!-- ========================================== -->
+<!-- ШАБЛОН ИГРЫ (ОСТАЕТСЯ СКРЫТЫМ) -->
 <template id="game-template">
 <!DOCTYPE html>
 <html lang="ru">
@@ -170,75 +171,53 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"><\/script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Ubuntu:wght@400;700;900&display=swap');
-        
-        :root {
-            --font-family: {{VAR_FONT}};
-            --text-color: {{VAR_TEXT_COLOR}};
-            --panel-bg: rgba({{VAR_PANEL_BG}}, {{VAR_PANEL_OPACITY}});
-        }
-
+        :root { --font-family: {{VAR_FONT}}; --text-color: {{VAR_TEXT_COLOR}}; --panel-bg: rgba({{VAR_PANEL_BG}}, {{VAR_PANEL_OPACITY}}); }
         body { font-family: var(--font-family); background-color: #000; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; user-select: none; }
         #game-wrapper { width: 100%; max-width: 1280px; aspect-ratio: 16/9; background-image: url('https://i.postimg.cc/HsxzZ6mn/image.png'); background-size: cover; background-position: center; position: relative; display: flex; overflow: hidden; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
         .overlay-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 100%); z-index: 1; }
-        
         #hit-stop-flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; opacity: 0; z-index: 9999; pointer-events: none; transition: opacity 0.1s ease-out; }
-        
         #start-screen, #final-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 50; backdrop-filter: blur(5px); text-align:center; transition: opacity 0.3s;}
         .start-content { background: var(--panel-bg); padding: 40px 60px; border-radius: 30px; max-width: 600px; border: 4px solid #f39c12; }
         .start-content h2 { font-size: 3rem; color: var(--text-color); margin-top: 0; text-transform: uppercase; }
         .start-content p { font-size: 1.5rem; color: var(--text-color); font-weight: 700; }
-        
         .c-btn { padding: 15px 50px; background-color: #ff7979; color: white; border: none; border-radius: 40px; font-size: 2rem; font-weight: 700; font-family: var(--font-family); cursor: pointer; transition: all 0.2s; box-shadow: 0 8px 0 #eb4d4b; text-transform: uppercase; margin-top: 10px; }
         .c-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #eb4d4b; }
-
         #left-panel { width: 35%; height: 100%; position: relative; z-index: 2; }
         #silomer-machine { position: absolute; width: 100%; height: 85%; bottom: 5%; background-image: url('https://i.postimg.cc/85fWQqXv/GG-2-unit-2-3-kopia.png'); background-size: contain; background-position: center bottom; background-repeat: no-repeat; }
-        
         @keyframes shake { 0% { transform: translate(2px, 2px); } 20% { transform: translate(-4px, 0px); } 40% { transform: translate(2px, -2px); } 60% { transform: translate(-4px, 1px); } 80% { transform: translate(-2px, -2px); } 100% { transform: translate(0, 0); } }
         .shake-effect { animation: shake 0.3s both; }
         @keyframes epicShake { 0% { transform: translate(8px, 8px) scale(1.03); } 20% { transform: translate(-10px, 0px) scale(1.03); } 40% { transform: translate(8px, -8px) scale(1.03); } 60% { transform: translate(-10px, 2px) scale(1); } 80% { transform: translate(-8px, -4px) scale(1); } 100% { transform: translate(0, 0) scale(1); } }
         .epic-shake-effect { animation: epicShake 0.4s both; }
-
         #score-wrapper { position: absolute; top: -8%; left: 50%; transform: translateX(-50%); width: 240px; height: 110px; background-image: url('https://i.postimg.cc/RhM2zKxn/11_(14).png'); background-size: contain; background-position: center; background-repeat: no-repeat; display: flex; justify-content: center; align-items: center; z-index: 10; }
         #score-display { color: #ffd700; font-weight: 900; font-size: 1.8rem; text-shadow: 0 3px 6px rgba(0,0,0,0.8); margin-top: -2px; transition: transform 0.2s;}
         .score-anim { transform: scale(1.3); color: #fff !important; }
-        
         @keyframes comboPulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); text-shadow: 0 0 20px #ff7979, 0 0 10px #f1c40f; color: #fff; } 100% { transform: scale(1); } }
         .combo-active { animation: comboPulse 0.8s infinite !important; }
-
         #track { position: absolute; left: 50%; transform: translateX(-50%); top: 30%; height: 48%; width: 10px; background: rgba(255, 255, 255, 0.05); z-index: 5; }
         #slider { position: absolute; width: 24px; height: 24px; left: -7px; background: #ffd700; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(255, 215, 0, 0.8); z-index: 6; }
         #slider-pointer { position: absolute; width: 1000px; height: 3px; background: linear-gradient(90deg, rgba(255, 215, 0, 0.9) 0%, transparent 100%); top: 50%; left: 100%; transform: translateY(-50%); pointer-events: none; z-index: 1; }
-        
         #hammer-btn { position: absolute; bottom: 8%; left: 49.5%; transform: translateX(-50%); width: 90px; height: 90px; background: transparent url('https://i.postimg.cc/wM6ndL8Z/11_(13).png') center/contain no-repeat; border: none; cursor: pointer; z-index: 10; outline:none; }
         #hammer-btn:active, #hammer-btn.pressed { transform: translate(-50%, 8px) scale(0.95); }
         #hammer-btn:disabled { filter: grayscale(100%); opacity: 0.8; }
-
         #right-panel { width: 65%; height: 100%; display: flex; flex-direction: column; padding: 30px 60px 40px 20px; box-sizing: border-box; position: relative; z-index: 2; }
         #top-info-bar { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; flex-shrink: 0; }
         #lives-container { font-size: 1.6rem; display:flex; gap:8px;}
         .heart { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); transition: all 0.3s; }
         .heart.lost { filter: grayscale(100%); opacity: 0.3; transform: scale(0.8); }
-
         #progress-container { width: 100%; background: rgba(0,0,0,0.5); border-radius: 10px; height: 12px; margin-bottom: 15px; border: 2px solid #555; overflow: hidden; flex-shrink: 0; }
         #progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #f1c40f, #f39c12); transition: width 0.3s ease; }
         #progress-text { text-align: right; color: #f1c40f; font-weight: 700; font-size: 1.2rem; text-transform: uppercase; }
-
         #question-display { background-color: var(--panel-bg); color: var(--text-color); padding: 20px 30px; border-radius: 20px; font-size: 1.8rem; font-weight: 700; text-align: center; border: 4px solid #f39c12; margin-bottom: 30px; min-height: 100px; display: flex; align-items: center; justify-content: center; z-index: 10; flex-shrink: 0; }
-        
         #answers-container { position: absolute; left: 20px; width: calc(100% - 80px); display: flex; flex-direction: column; justify-content: space-between; }
         .answer-slot { width: 100%; background-color: var(--panel-bg); border: 3px solid #cbd5e1; color: var(--text-color); padding: 20px; font-size: 1.6rem; font-weight: 700; border-radius: 15px; text-align: center; transition: all 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.15); z-index: 3; box-sizing: border-box; transform-origin: left center; }
-        
         @keyframes cardSmash { 0%{transform:translateX(0) scale(1);} 20%{transform:translateX(20px) rotate(3deg) scale(0.95);} 50%{transform:translateX(-5px) rotate(-1deg) scale(1.02);} 100%{transform:translateX(0) rotate(0deg) scale(1);} }
         .card-smash-anim { animation: cardSmash 0.5s forwards !important; }
         @keyframes cardEpicSmash { 0%{transform:translateX(0) scale(1);} 20%{transform:translateX(35px) rotate(5deg) scale(0.9);} 50%{transform:translateX(-10px) rotate(-2deg) scale(1.05);} 100%{transform:translateX(0) rotate(0deg) scale(1.1);} }
         .card-epic-smash-anim { animation: cardEpicSmash 0.6s forwards !important; }
-
         #feedback-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
         #feedback-text { font-size: 5rem; font-weight: 900; text-align: center; text-transform: uppercase; text-shadow: 0 4px 15px rgba(0,0,0,0.4); margin-bottom: 10px; }
         #feedback-combo { font-size: 3rem; font-weight: 900; color: #ff9f43; text-shadow: 0 4px 10px rgba(0,0,0,0.5); margin-bottom: 15px; display: none; text-transform: uppercase; }
         #feedback-points { font-size: 3.5rem; font-weight: 700; background: var(--panel-bg); color: var(--text-color); padding: 10px 40px; border-radius: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-
         #final-title { font-size: 4rem; font-weight: 900; margin: 0; color: #fff; text-transform: uppercase; }
         #final-score { font-size: 6rem; font-weight: 900; color: #ffd700; margin: 5px 0 0 0; text-shadow: 0 5px 20px rgba(243, 156, 18, 0.5); }
         .stats-container { background: rgba(0, 0, 0, 0.6); padding: 20px 40px; border-radius: 20px; margin: 20px 0 30px 0; border: 2px solid #ffd700; text-align: left; }
@@ -248,373 +227,37 @@
     </style>
 </head>
 <body>
-
 <audio id="bg-music" loop preload="auto" crossorigin="anonymous"><source src="https://freepd.com/music/The%20Entertainer.mp3" type="audio/mpeg"></audio>
-
 <div id="game-wrapper">
     <div class="overlay-bg"></div>
     <div id="hit-stop-flash"></div>
-
-    <div id="start-screen">
-        <div class="start-content">
-            <h2 id="ui-start-title"></h2>
-            <p id="ui-start-desc"></p>
-            <button id="start-btn" class="c-btn"></button>
-        </div>
-    </div>
-
-    <div id="left-panel">
-        <div id="silomer-machine">
-            <div id="score-wrapper"><div id="score-display">0</div></div>
-            <div id="track"><div id="slider"><div id="slider-pointer"></div></div></div>
-            <button id="hammer-btn" disabled></button>
-        </div>
-    </div>
-
-    <div id="right-panel">
-        <div id="top-info-bar">
-            <div id="lives-container"><span class="heart" id="life-1">❤️</span><span class="heart" id="life-2">❤️</span><span class="heart" id="life-3">❤️</span></div>
-            <div id="progress-text"><span id="ui-prog-text"></span> <span id="progress-num">1</span> / <span id="total-num">12</span></div>
-        </div>
-        <div id="progress-container"><div id="progress-bar"></div></div>
-        <div id="question-display">Загрузка...</div>
-        <div id="answers-container"></div>
-    </div>
-
-    <div id="feedback-overlay">
-        <div id="feedback-text"></div>
-        <div id="feedback-combo"></div>
-        <div id="feedback-points"></div>
-    </div>
-
-    <div id="final-screen">
-        <h2 id="final-title"></h2>
-        <div id="final-score">0</div>
-        
-        <div class="stats-container">
-            <div class="stat-row"><span class="stat-icon">🎯</span> <span id="ui-st-1"></span> <span id="stat-perfect">0</span></div>
-            <div class="stat-row"><span class="stat-icon">👍</span> <span id="ui-st-2"></span> <span id="stat-good">0</span></div>
-            <div class="stat-row"><span class="stat-icon">❌</span> <span id="ui-st-3"></span> <span id="stat-wrong">0</span></div>
-            <div class="stat-row"><span class="stat-icon">🔥</span> <span id="ui-st-4"></span> <span id="stat-max-combo">x1</span></div>
-        </div>
-
-        <button class="c-btn" onclick="initGame()" id="ui-btn-restart"></button>
-    </div>
+    <div id="start-screen"><div class="start-content"><h2 id="ui-start-title"></h2><p id="ui-start-desc"></p><button id="start-btn" class="c-btn"></button></div></div>
+    <div id="left-panel"><div id="silomer-machine"><div id="score-wrapper"><div id="score-display">0</div></div><div id="track"><div id="slider"><div id="slider-pointer"></div></div></div><button id="hammer-btn" disabled></button></div></div>
+    <div id="right-panel"><div id="top-info-bar"><div id="lives-container"><span class="heart" id="life-1">❤️</span><span class="heart" id="life-2">❤️</span><span class="heart" id="life-3">❤️</span></div><div id="progress-text"><span id="ui-prog-text"></span> <span id="progress-num">1</span> / <span id="total-num">12</span></div></div><div id="progress-container"><div id="progress-bar"></div></div><div id="question-display">Загрузка...</div><div id="answers-container"></div></div>
+    <div id="feedback-overlay"><div id="feedback-text"></div><div id="feedback-combo"></div><div id="feedback-points"></div></div>
+    <div id="final-screen"><h2 id="final-title"></h2><div id="final-score">0</div><div class="stats-container"><div class="stat-row"><span class="stat-icon">🎯</span> <span id="ui-st-1"></span> <span id="stat-perfect">0</span></div><div class="stat-row"><span class="stat-icon">👍</span> <span id="ui-st-2"></span> <span id="stat-good">0</span></div><div class="stat-row"><span class="stat-icon">❌</span> <span id="ui-st-3"></span> <span id="stat-wrong">0</span></div><div class="stat-row"><span class="stat-icon">🔥</span> <span id="ui-st-4"></span> <span id="stat-max-combo">x1</span></div></div><button class="c-btn" onclick="initGame()" id="ui-btn-restart"></button></div>
 </div>
-
 <script>
-    // ИНЖЕКЦИЯ КОНФИГА ИЗ РЕДАКТОРА
     const GAME_CFG = {{VAR_JSON_CONFIG}};
-    
-    // ИНИЦИАЛИЗАЦИЯ ТЕКСТОВ
-    document.getElementById('ui-start-title').innerText = GAME_CFG.texts.startTitle;
-    document.getElementById('ui-start-desc').innerText = GAME_CFG.texts.startDesc;
-    document.getElementById('start-btn').innerText = GAME_CFG.texts.btnStart;
-    document.getElementById('ui-prog-text').innerText = GAME_CFG.texts.progress;
-    document.getElementById('ui-btn-restart').innerText = GAME_CFG.texts.btnRestart;
-    document.getElementById('total-num').innerText = GAME_CFG.questions.length;
-    
-    document.getElementById('ui-st-1').innerText = GAME_CFG.texts.stat1;
-    document.getElementById('ui-st-2').innerText = GAME_CFG.texts.stat2;
-    document.getElementById('ui-st-3').innerText = GAME_CFG.texts.stat3;
-    document.getElementById('ui-st-4').innerText = GAME_CFG.texts.stat4;
+    document.getElementById('ui-start-title').innerText = GAME_CFG.texts.startTitle; document.getElementById('ui-start-desc').innerText = GAME_CFG.texts.startDesc;
+    document.getElementById('start-btn').innerText = GAME_CFG.texts.btnStart; document.getElementById('ui-prog-text').innerText = GAME_CFG.texts.progress;
+    document.getElementById('ui-btn-restart').innerText = GAME_CFG.texts.btnRestart; document.getElementById('total-num').innerText = GAME_CFG.questions.length;
+    document.getElementById('ui-st-1').innerText = GAME_CFG.texts.stat1; document.getElementById('ui-st-2').innerText = GAME_CFG.texts.stat2;
+    document.getElementById('ui-st-3').innerText = GAME_CFG.texts.stat3; document.getElementById('ui-st-4').innerText = GAME_CFG.texts.stat4;
 
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const bgMusic = document.getElementById('bg-music');
-    bgMusic.volume = 0.2; 
-
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)(); const bgMusic = document.getElementById('bg-music'); bgMusic.volume = 0.2; 
     function playSound(type) {
         if(audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        osc.connect(gainNode); gainNode.connect(audioCtx.destination);
-        const now = audioCtx.currentTime;
-        bgMusic.volume = 0.05;
-
-        if (type === 'hit') { 
-            osc.type = 'square'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(0.01, now + 0.1);
-            gainNode.gain.setValueAtTime(1, now); gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-            osc.start(now); osc.stop(now + 0.1);
-            setTimeout(() => { if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; }, 300);
-        } else if (type === 'success') { 
-            osc.type = 'sine'; osc.frequency.setValueAtTime(440, now); osc.frequency.setValueAtTime(554.37, now + 0.1); osc.frequency.setValueAtTime(659.25, now + 0.2);
-            gainNode.gain.setValueAtTime(0.5, now); gainNode.gain.linearRampToValueAtTime(0, now + 0.5);
-            osc.start(now); osc.stop(now + 0.5);
-            setTimeout(() => { if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; }, 1500);
-        } else if (type === 'error') { 
-            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, now); osc.frequency.linearRampToValueAtTime(100, now + 0.4);
-            gainNode.gain.setValueAtTime(0.5, now); gainNode.gain.linearRampToValueAtTime(0, now + 0.4);
-            osc.start(now); osc.stop(now + 0.4);
-            setTimeout(() => { if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; }, 1000);
-        }
+        const osc = audioCtx.createOscillator(); const gainNode = audioCtx.createGain(); osc.connect(gainNode); gainNode.connect(audioCtx.destination); const now = audioCtx.currentTime; bgMusic.volume = 0.05;
+        if (type === 'hit') { osc.type = 'square'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(0.01, now + 0.1); gainNode.gain.setValueAtTime(1, now); gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1); setTimeout(() => { if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; }, 300); } 
+        else if (type === 'success') { osc.type = 'sine'; osc.frequency.setValueAtTime(440, now); osc.frequency.setValueAtTime(554.37, now + 0.1); osc.frequency.setValueAtTime(659.25, now + 0.2); gainNode.gain.setValueAtTime(0.5, now); gainNode.gain.linearRampToValueAtTime(0, now + 0.5); osc.start(now); osc.stop(now + 0.5); setTimeout(() => { if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; }, 1500); } 
+        else if (type === 'error') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, now); osc.frequency.linearRampToValueAtTime(100, now + 0.4); gainNode.gain.setValueAtTime(0.5, now); gainNode.gain.linearRampToValueAtTime(0, now + 0.4); osc.start(now); osc.stop(now + 0.4); setTimeout(() => { if(ui.finalScreen.style.display !== 'flex') bgMusic.volume = 0.2; }, 1000); }
     }
 
     let currentQ = 0, score = 0, comboCount = 0, comboMultiplier = 1, lives = 3, gameStats = { p:0, g:0, w:0, m:0 }; 
     let animId, laserY = 0, direction = 1, isPlaying = false, sliderSpeed = 5 * 0.9;
+    const ui = { progNum: document.getElementById('progress-num'), progBar: document.getElementById('progress-bar'), score: document.getElementById('score-display'), question: document.getElementById('question-display'), answersBox: document.getElementById('answers-container'), track: document.getElementById('track'), slider: document.getElementById('slider'), machine: document.getElementById('silomer-machine'), btn: document.getElementById('hammer-btn'), feedback: document.getElementById('feedback-overlay'), fText: document.getElementById('feedback-text'), fCombo: document.getElementById('feedback-combo'), fPoints: document.getElementById('feedback-points'), finalScreen: document.getElementById('final-screen'), finalTitle: document.getElementById('final-title'), finalScore: document.getElementById('final-score'), startScreen: document.getElementById('start-screen'), startBtn: document.getElementById('start-btn'), statP: document.getElementById('stat-perfect'), statG: document.getElementById('stat-good'), statW: document.getElementById('stat-wrong'), statM: document.getElementById('stat-max-combo'), hitFlash: document.getElementById('hit-stop-flash') };
 
-    const ui = {
-        progNum: document.getElementById('progress-num'), progBar: document.getElementById('progress-bar'),
-        score: document.getElementById('score-display'), question: document.getElementById('question-display'),
-        answersBox: document.getElementById('answers-container'), track: document.getElementById('track'),
-        slider: document.getElementById('slider'), machine: document.getElementById('silomer-machine'),
-        btn: document.getElementById('hammer-btn'), feedback: document.getElementById('feedback-overlay'),
-        fText: document.getElementById('feedback-text'), fCombo: document.getElementById('feedback-combo'), 
-        fPoints: document.getElementById('feedback-points'), finalScreen: document.getElementById('final-screen'),
-        finalTitle: document.getElementById('final-title'), finalScore: document.getElementById('final-score'),
-        startScreen: document.getElementById('start-screen'), startBtn: document.getElementById('start-btn'),
-        statP: document.getElementById('stat-perfect'), statG: document.getElementById('stat-good'),
-        statW: document.getElementById('stat-wrong'), statM: document.getElementById('stat-max-combo'),
-        hitFlash: document.getElementById('hit-stop-flash')
-    };
-
-    function alignAnswers() {
-        const trackRect = ui.track.getBoundingClientRect(); const rightPanelRect = document.getElementById('right-panel').getBoundingClientRect();
-        ui.answersBox.style.top = (trackRect.top - rightPanelRect.top) + 'px'; ui.answersBox.style.height = trackRect.height + 'px';
-    }
+    function alignAnswers() { const trackRect = ui.track.getBoundingClientRect(); const rightPanelRect = document.getElementById('right-panel').getBoundingClientRect(); ui.answersBox.style.top = (trackRect.top - rightPanelRect.top) + 'px'; ui.answersBox.style.height = trackRect.height + 'px'; }
     window.addEventListener('resize', alignAnswers);
-
-    ui.startBtn.addEventListener('click', () => {
-        if(audioCtx.state === 'suspended') audioCtx.resume();
-        bgMusic.play().catch(e=>console.log(e));
-        ui.startScreen.style.opacity = '0';
-        setTimeout(() => { ui.startScreen.style.display = 'none'; initGame(); }, 300);
-    });
-
-    window.addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); if (!ui.btn.disabled && isPlaying) { ui.btn.classList.add('pressed'); handleHit(); } } });
-    window.addEventListener('keyup', (e) => { if (e.code === 'Space') ui.btn.classList.remove('pressed'); });
-    ui.btn.addEventListener('mousedown', (e) => { if (!ui.btn.disabled && isPlaying) handleHit(e); });
-    ui.btn.addEventListener('touchstart', (e) => { if (!ui.btn.disabled && isPlaying) handleHit(e); }, { passive: false });
-
-    function initGame() {
-        currentQ = 0; score = 0; comboCount = 0; comboMultiplier = 1; lives = 3; gameStats = { p:0, g:0, w:0, m:0 };
-        updateLives(); ui.score.classList.remove('combo-active'); ui.score.innerText = "0"; bgMusic.volume = 0.2; ui.finalScreen.style.display = 'none';
-        loadQuestion();
-    }
-
-    function updateLives() { for (let i=1; i<=3; i++) { const h = document.getElementById(`life-${i}`); i<=lives ? h.classList.remove('lost') : h.classList.add('lost'); } }
-
-    function loadQuestion() {
-        if (currentQ >= GAME_CFG.questions.length) { endGame(false); return; }
-        const qD = GAME_CFG.questions[currentQ];
-        ui.progNum.innerText = currentQ + 1; ui.progBar.style.width = `${(currentQ / GAME_CFG.questions.length) * 100}%`;
-        ui.question.innerText = qD.q; ui.answersBox.innerHTML = ''; alignAnswers();
-        qD.opt.forEach((opt, idx) => {
-            const d = document.createElement('div'); d.className = 'answer-slot'; d.innerText = opt; d.dataset.index = idx; ui.answersBox.appendChild(d);
-        });
-        ui.btn.disabled = false; ui.feedback.style.opacity = '0'; ui.feedback.style.backdropFilter = 'none';
-        laserY = 0; direction = 1; ui.slider.style.top = (laserY - (ui.slider.clientHeight / 2)) + 'px'; isPlaying = true; animateSlider();
-    }
-
-    function animateSlider() {
-        if (!isPlaying) return;
-        const th = ui.track.clientHeight; laserY += sliderSpeed * direction;
-        if (laserY >= th) { laserY = th; direction = -1; } else if (laserY <= 0) { laserY = 0; direction = 1; }
-        ui.slider.style.top = (laserY - (ui.slider.clientHeight / 2)) + 'px'; animId = requestAnimationFrame(animateSlider);
-    }
-
-    function handleHit(e) { if(e) e.preventDefault(); if (!isPlaying) return; ui.machine.classList.remove('shake-effect'); void ui.machine.offsetWidth; ui.machine.classList.add('shake-effect'); playSound('hit'); isPlaying = false; cancelAnimationFrame(animId); ui.btn.disabled = true; checkHit(); }
-
-    function checkHit() {
-        const tr = ui.track.getBoundingClientRect(); const absY = tr.top + laserY; 
-        const slots = document.querySelectorAll('.answer-slot'); let hId = -1, acc = 0;
-        slots.forEach((sl, idx) => {
-            const r = sl.getBoundingClientRect();
-            if (absY >= r.top && absY <= r.bottom) { hId = idx; const c = r.top + (r.height/2); acc = 1 - (Math.abs(c - absY) / (r.height/2)); }
-        });
-        processResult(hId, acc);
-    }
-
-    function processResult(hId, acc) {
-        const cId = GAME_CFG.questions[currentQ].c; let pts = 0, msg = "", col = "", isC = (hId === parseInt(cId)), isP = (isC && acc > 0.6);
-        const slots = document.querySelectorAll('.answer-slot');
-        ui.machine.classList.remove('shake-effect', 'epic-shake-effect'); void ui.machine.offsetWidth; 
-
-        if (isP) {
-            ui.machine.classList.add('epic-shake-effect'); ui.hitFlash.style.opacity = '0.8'; setTimeout(() => ui.hitFlash.style.opacity = '0', 80);
-            if (hId !== -1) slots[hId].classList.add('card-epic-smash-anim');
-        } else {
-            ui.machine.classList.add('shake-effect'); if (hId !== -1) slots[hId].classList.add('card-smash-anim');
-        }
-
-        if (isC) { comboCount++; gameStats.m = Math.max(gameStats.m, comboCount); comboMultiplier = Math.min(comboCount, 3); } 
-        else { comboCount = 0; comboMultiplier = 1; lives--; updateLives(); }
-
-        if (hId === -1) { pts = -50; msg = GAME_CFG.texts.hitMiss; col = "#bdc3c7"; gameStats.w++; playSound('error'); } 
-        else if (isC) {
-            slots[hId].style.borderColor = "#2ecc71"; slots[hId].style.backgroundColor = "#e8f8f5"; playSound('success'); fireConfetti(); 
-            if (isP) { pts = 100 * comboMultiplier; msg = GAME_CFG.texts.hitPerf; col = "#2ecc71"; gameStats.p++; } 
-            else { pts = 70 * comboMultiplier; msg = GAME_CFG.texts.hitGood; col = "#f1c40f"; gameStats.g++; }
-        } else {
-            slots[hId].style.borderColor = "#e74c3c"; slots[hId].style.backgroundColor = "#fdedec"; pts = -80; msg = GAME_CFG.texts.hitWrong; col = "#e74c3c"; gameStats.w++; playSound('error'); 
-        }
-
-        ui.fText.innerText = msg; ui.fText.style.color = col; ui.fPoints.innerText = pts > 0 ? `+${pts}` : pts; ui.fPoints.style.color = col;
-        if (comboCount >= 2) { ui.fCombo.innerText = `🔥 ${GAME_CFG.texts.combo} x${comboMultiplier} 🔥`; ui.fCombo.style.display = 'block'; ui.score.classList.add('combo-active'); } 
-        else { ui.fCombo.style.display = 'none'; ui.score.classList.remove('combo-active'); }
-
-        ui.feedback.style.opacity = '1'; ui.feedback.style.backdropFilter = 'blur(3px)'; updateScore(pts);
-
-        setTimeout(() => { currentQ++; if (lives <= 0) endGame(true); else loadQuestion(); }, 2000); 
-    }
-
-    function animateScore(start, end, dur) {
-        let sT = null;
-        const step = (t) => {
-            if (!sT) sT = t; const p = Math.min((t - sT) / dur, 1);
-            ui.score.innerText = Math.floor(start + (end - start) * (p * (2 - p)));
-            p < 1 ? requestAnimationFrame(step) : ui.score.innerText = end;
-        }; requestAnimationFrame(step);
-    }
-    function updateScore(pts) { const old = score; score = Math.max(0, score + pts); if(pts !== 0) { if (!ui.score.classList.contains('combo-active')) { ui.score.classList.add('score-anim'); setTimeout(()=>ui.score.classList.remove('score-anim'), 300); } animateScore(old, score, 1000); } }
-    function fireConfetti() { confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, colors: ['#ffd700', '#f1c40f', '#2ecc71', '#3498db'] }); }
-
-    function endGame(isDeath) {
-        bgMusic.volume = 0.02; ui.progBar.style.width = '100%'; ui.finalScreen.style.display = 'flex'; ui.finalScore.innerText = score; ui.score.classList.remove('combo-active'); 
-        if (isDeath) { ui.finalTitle.innerText = GAME_CFG.texts.finLose; ui.finalTitle.style.color = "#ff7979"; } 
-        else { ui.finalTitle.innerText = GAME_CFG.texts.finWin; ui.finalTitle.style.color = "#fff"; fireConfetti(); setTimeout(fireConfetti, 500); }
-        ui.statP.innerText = gameStats.p; ui.statG.innerText = gameStats.g; ui.statW.innerText = gameStats.w;
-        let mM = Math.min(gameStats.m, 3); ui.statM.innerText = gameStats.m > 1 ? `x${mM} (${gameStats.m} ${GAME_CFG.texts.statRow})` : "x1";
-    }
-    alignAnswers();
-<\/script>
-</body>
-</html>
-</template>
-
-<!-- СКРИПТЫ РЕДАКТОРА -->
-<script>
-    // Пресеты текстов
-    const presets = {
-        ru: {
-            st: "КАК ИГРАТЬ?", sd: "Золотой лазер быстро бегает вверх и вниз. Нажмите на кнопку (ИЛИ на ПРОБЕЛ), когда лазер окажется ровно на правильном ответе!",
-            bs: "НАЧАТЬ!", br: "ИГРАТЬ СНОВА", pr: "Вопрос", hp: "ИДЕАЛЬНО!", hg: "ОТЛИЧНО!", hw: "ОШИБКА!", hm: "ПРОМАХ!",
-            cmb: "КОМБО", fw: "ИГРА ЗАВЕРШЕНА", fl: "ПОТРАЧЕНО", s1: "Идеально:", s2: "Отлично:", s3: "Ошибки:", s4: "Макс. Комбо:", sr: "подряд"
-        },
-        en: {
-            st: "HOW TO PLAY?", sd: "The golden laser moves fast up and down. Hit the button (OR press SPACE) exactly when the laser is on the correct answer!",
-            bs: "START!", br: "PLAY AGAIN", pr: "Question", hp: "PERFECT!", hg: "GOOD!", hw: "WRONG!", hm: "MISS!",
-            cmb: "COMBO", fw: "GAME COMPLETED", fl: "GAME OVER", s1: "Perfect:", s2: "Good:", s3: "Mistakes:", s4: "Max Combo:", sr: "in a row"
-        }
-    };
-
-    let qCount = 0;
-
-    function applyLangPreset() {
-        const p = presets[document.getElementById('lang-select').value];
-        document.getElementById('t-start-title').value = p.st; document.getElementById('t-start-desc').value = p.sd;
-        document.getElementById('t-btn-start').value = p.bs; document.getElementById('t-btn-restart').value = p.br;
-        document.getElementById('t-progress').value = p.pr; document.getElementById('t-hit-perfect').value = p.hp;
-        document.getElementById('t-hit-good').value = p.hg; document.getElementById('t-hit-wrong').value = p.hw;
-        document.getElementById('t-hit-miss').value = p.hm; document.getElementById('t-combo').value = p.cmb;
-        document.getElementById('t-fin-win').value = p.fw; document.getElementById('t-fin-lose').value = p.fl;
-        document.getElementById('t-stat-1').value = p.s1; document.getElementById('t-stat-2').value = p.s2;
-        document.getElementById('t-stat-3').value = p.s3; document.getElementById('t-stat-4').value = p.s4;
-        document.getElementById('t-stat-row').value = p.sr;
-    }
-
-    function addQuestionBlock() {
-        qCount++;
-        const div = document.createElement('div');
-        div.className = 'question-block';
-        div.id = `qblock-${qCount}`;
-        div.innerHTML = `
-            <h4>Вопрос ${qCount}</h4>
-            <button class="remove-btn" onclick="this.parentElement.remove()">Удалить</button>
-            <div class="form-group">
-                <input type="text" class="q-text" placeholder="Текст вопроса..." value="Вопрос номер ${qCount}?">
-            </div>
-            <div class="options-grid">
-                <input type="text" class="q-opt-0" placeholder="Вариант 1" value="Ответ 1">
-                <input type="text" class="q-opt-1" placeholder="Вариант 2" value="Ответ 2">
-                <input type="text" class="q-opt-2" placeholder="Вариант 3" value="Ответ 3">
-            </div>
-            <select class="correct-select">
-                <option value="0">Правильный ответ: Вариант 1</option>
-                <option value="1">Правильный ответ: Вариант 2</option>
-                <option value="2">Правильный ответ: Вариант 3</option>
-            </select>
-        `;
-        document.getElementById('questions-container').appendChild(div);
-    }
-
-    function hexToRgb(hex) {
-        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : "255, 255, 255";
-    }
-
-    function generateIframe() {
-        // 1. Сбор вопросов
-        const qBlocks = document.querySelectorAll('.question-block');
-        if (qBlocks.length === 0) { alert('Добавьте хотя бы 1 вопрос!'); return; }
-        
-        let questions = [];
-        qBlocks.forEach(b => {
-            questions.push({
-                q: b.querySelector('.q-text').value,
-                opt: [ b.querySelector('.q-opt-0').value, b.querySelector('.q-opt-1').value, b.querySelector('.q-opt-2').value ],
-                c: b.querySelector('.correct-select').value
-            });
-        });
-
-        // 2. Сбор конфига
-        const config = {
-            questions: questions,
-            texts: {
-                startTitle: document.getElementById('t-start-title').value,
-                startDesc: document.getElementById('t-start-desc').value,
-                btnStart: document.getElementById('t-btn-start').value,
-                btnRestart: document.getElementById('t-btn-restart').value,
-                progress: document.getElementById('t-progress').value,
-                hitPerf: document.getElementById('t-hit-perfect').value,
-                hitGood: document.getElementById('t-hit-good').value,
-                hitWrong: document.getElementById('t-hit-wrong').value,
-                hitMiss: document.getElementById('t-hit-miss').value,
-                combo: document.getElementById('t-combo').value,
-                finWin: document.getElementById('t-fin-win').value,
-                finLose: document.getElementById('t-fin-lose').value,
-                stat1: document.getElementById('t-stat-1').value,
-                stat2: document.getElementById('t-stat-2').value,
-                stat3: document.getElementById('t-stat-3').value,
-                stat4: document.getElementById('t-stat-4').value,
-                statRow: document.getElementById('t-stat-row').value
-            }
-        };
-
-        // 3. Дизайн переменные
-        const font = document.getElementById('font-family').value;
-        const txtCol = document.getElementById('text-color').value;
-        const pBgRgb = hexToRgb(document.getElementById('panel-color').value);
-        const pOpac = document.getElementById('panel-opacity').value / 100;
-
-        // 4. Подстановка в шаблон
-        let template = document.getElementById('game-template').innerHTML;
-        template = template.replace('{{VAR_FONT}}', font);
-        template = template.replace('{{VAR_TEXT_COLOR}}', txtCol);
-        template = template.replace('{{VAR_PANEL_BG}}', pBgRgb);
-        template = template.replace('{{VAR_PANEL_OPACITY}}', pOpac);
-        template = template.replace('{{VAR_JSON_CONFIG}}', JSON.stringify(config));
-
-        // 5. Кодирование в Base64 для Iframe
-        const encodedHtml = btoa(unescape(encodeURIComponent(template)));
-        const iframeStr = `<iframe src="data:text/html;base64,${encodedHtml}" width="100%" height="720px" frameborder="0" allowfullscreen style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);"></iframe>`;
-        
-        document.getElementById('iframe-code').value = iframeStr;
-        document.getElementById('output-area').style.display = 'block';
-        
-        // Прокрутка вниз
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }
-
-    function copyCode() {
-        const ta = document.getElementById('iframe-code');
-        ta.select(); document.execCommand('copy');
-        alert('Код скопирован! Теперь вставьте его в Genially через меню "Insert -> </> Other"');
-    }
-
-    // Инициализация при загрузке
-    window.onload = () => {
-        addQuestionBlock(); // Добавляем первый пустой вопрос для примера
-    }
-</script>
-</body>
-</html>
+    ui.startBtn.addEventListener('click', () => { if(audioCtx.state === 'suspended') audioCtx.resume(); bgMusic.play().catch(e=>console.log(e)); ui.startScreen.style
