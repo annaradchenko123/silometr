@@ -3,63 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Конструктор Игры: Силомер</title>
-    <!-- Загружаем шрифты для предпросмотра -->
+    <title>Конструктор Игры</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Ubuntu:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 1300px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #2c3e50; margin-top: 0; border-bottom: 2px solid #ecf0f1; padding-bottom: 15px; }
-        
-        .main-layout { display: flex; gap: 40px; align-items: flex-start; margin-top: 20px; }
-        .left-col { flex: 1; min-width: 0; }
-        .right-col { width: 380px; position: sticky; top: 20px; flex-shrink: 0; }
+        /* НЕЖНАЯ СИРЕНЕВАЯ ПАЛИТРА ПОД ЛОГОТИП */
+        :root {
+            --bg-main: #f5f1f9;       /* Очень светлый лавандовый фон */
+            --bg-panel: #ffffff;      /* Белые плашки */
+            --bg-section: #fcfbfe;    /* Чуть выделяющийся фон секций */
+            --border-color: #e2d9ee;  /* Нежные границы */
+            --text-main: #544961;     /* Темно-фиолетовый (вместо черного) */
+            --text-muted: #8d7f9e;    /* Приглушенный текст */
+            --accent-main: #a685c4;   /* Сиреневый с худи (основной акцент) */
+            --accent-hover: #906eb0;  /* Чуть темнее для наведения */
+            --accent-light: #dfd2ec;  /* Светло-сиреневый для выделения */
+            --accent-danger: #d99a9f; /* Мягкий пудрово-красный для удаления */
+            --accent-success: #9bc4a6;/* Мягкий фисташковый */
+        }
 
-        .section { background: #fafbfc; border: 1px solid #e1e4e8; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-        .section h2 { margin-top: 0; font-size: 1.2rem; color: #2c3e50; border-left: 4px solid #3498db; padding-left: 10px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-main); margin: 0; padding: 20px; color: var(--text-main); }
+        .container { max-width: 1350px; margin: 0 auto; background: var(--bg-panel); padding: 30px 40px; border-radius: 20px; box-shadow: 0 10px 40px rgba(166, 133, 196, 0.15); border: 1px solid #fff; }
+        
+        /* ШАПКА С ЛОГОТИПОМ */
+        .editor-header { display: flex; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 20px; margin-bottom: 25px; gap: 20px; }
+        .editor-logo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 15px rgba(166, 133, 196, 0.3); border: 3px solid #fff; }
+        h1 { margin: 0; color: var(--accent-main); font-size: 2.2rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
+        
+        /* ДВУХКОЛОНОЧНЫЙ МАКЕТ */
+        .main-layout { display: flex; gap: 40px; align-items: flex-start; }
+        .left-col { flex: 1; min-width: 0; }
+        .right-col { width: 400px; position: sticky; top: 20px; flex-shrink: 0; }
+
+        .section { background: var(--bg-section); border: 1px solid var(--border-color); padding: 25px; border-radius: 15px; margin-bottom: 25px; transition: box-shadow 0.3s; }
+        .section:hover { box-shadow: 0 5px 20px rgba(166, 133, 196, 0.1); }
+        .section h2 { margin-top: 0; font-size: 1.2rem; color: var(--accent-main); border-left: 4px solid var(--accent-light); padding-left: 12px; }
+        
         .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; color: #555; }
-        input[type="text"], select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 1rem; }
+        label { display: block; font-weight: bold; margin-bottom: 6px; font-size: 0.9rem; color: var(--text-muted); }
+        
+        input[type="text"], select, textarea { width: 100%; padding: 12px; background: #fff; color: var(--text-main); border: 1px solid var(--border-color); border-radius: 10px; box-sizing: border-box; font-family: inherit; font-size: 1rem; transition: all 0.2s; }
+        input[type="text"]:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent-main); box-shadow: 0 0 0 3px var(--accent-light); }
+        
+        input[type="color"] { width: 100%; height: 45px; border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; background: #fff; padding: 2px; }
+        input[type="range"] { width: 100%; cursor: pointer; accent-color: var(--accent-main); }
+
         .row { display: flex; gap: 15px; }
         .col { flex: 1; }
         
-        .question-block { background: #fff; border: 1px solid #d1d5da; padding: 20px; border-radius: 8px; margin-bottom: 15px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .question-block h4 { margin: 0 0 15px 0; color: #e67e22; font-size: 1.1rem; }
-        .remove-btn { position: absolute; top: 15px; right: 15px; background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+        .question-block { background: #fff; border: 2px solid var(--border-color); padding: 20px; border-radius: 15px; margin-bottom: 20px; position: relative; transition: all 0.2s; }
+        .question-block:hover { border-color: var(--accent-main); box-shadow: 0 5px 15px rgba(166, 133, 196, 0.1); }
+        .question-block h4 { margin: 0 0 15px 0; color: var(--text-main); font-size: 1.1rem; }
+        
+        /* Кнопки */
+        .remove-btn { position: absolute; top: 15px; right: 15px; background: var(--accent-danger); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: bold; transition: background 0.2s; }
+        .remove-btn:hover { background: #c97f85; }
+        
         .options-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .correct-select { width: 100%; padding: 8px; background-color: #f0f8ff; border-color: #3498db; font-weight: bold; }
+        .correct-select { background-color: #f3f8f4; border-color: var(--accent-success); color: #4e825b; font-weight: bold; }
         
-        .btn-add { background: #2ecc71; color: white; border: none; padding: 12px 25px; border-radius: 6px; font-weight: bold; cursor: pointer; display: block; margin: 0 auto; font-size: 1rem; }
-        .btn-generate { background: #3498db; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; font-size: 1.2rem; cursor: pointer; width: 100%; margin-top: 20px; text-transform: uppercase; }
+        .btn-add { background: transparent; color: var(--accent-main); border: 2px dashed var(--accent-main); padding: 12px 25px; border-radius: 10px; font-weight: bold; cursor: pointer; display: block; margin: 0 auto; font-size: 1rem; transition: all 0.2s; }
+        .btn-add:hover { background: var(--bg-main); }
         
-        #output-area { margin-top: 30px; display: none; background: #e8f5e9; padding: 20px; border-radius: 8px; border: 1px solid #a5d6a7; }
-        textarea.code-box { width: 100%; height: 80px; font-family: monospace; padding: 10px; border: 1px solid #a5d6a7; border-radius: 6px; resize: vertical; font-size: 0.9rem; margin-top:5px; }
-        .copy-btn { background: #2c3e50; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-top: 10px; font-weight: bold; }
+        .btn-generate { background: var(--accent-main); color: white; border: none; padding: 18px 30px; border-radius: 12px; font-weight: bold; font-size: 1.2rem; cursor: pointer; width: 100%; margin-top: 20px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 8px 20px rgba(166, 133, 196, 0.3); transition: all 0.2s; }
+        .btn-generate:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 10px 25px rgba(166, 133, 196, 0.4); }
+        .btn-generate:active { transform: translateY(2px); }
+        
+        #output-area { margin-top: 30px; display: none; background: #f3f8f4; padding: 25px; border-radius: 15px; border: 2px solid var(--accent-success); }
+        #output-area h2 { color: #4e825b; margin-top: 0; }
+        textarea.code-box { width: 100%; height: 90px; font-family: monospace; padding: 15px; background: #fff; border: 1px solid var(--accent-success); border-radius: 10px; resize: vertical; font-size: 0.95rem; margin-top:10px; color: #4e825b; }
+        .copy-btn { background: var(--accent-success); color: #fff; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; margin-top: 15px; font-weight: bold; text-transform: uppercase; transition: background 0.2s;}
+        .copy-btn:hover { background: #82ab8e; }
 
         /* СТИЛИ ПРЕДПРОСМОТРА */
-        .preview-title { text-align: center; color: #e67e22; font-size: 1.2rem; margin-bottom: 15px; font-weight: bold; text-transform: uppercase; }
-        #preview-box {
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.3)), url('https://i.postimg.cc/HsxzZ6mn/image.png') center/cover;
-            padding: 30px 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            display: flex; flex-direction: column; gap: 15px; min-height: 350px;
-        }
-        #prev-q {
-            border: 4px solid #f39c12; border-radius: 15px; padding: 15px 20px;
-            font-size: 1.4rem; font-weight: 700; text-align: center; min-height: 70px;
-            display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        .prev-a {
-            border: 3px solid #cbd5e1; border-radius: 12px; padding: 12px 20px;
-            font-size: 1.2rem; font-weight: 700; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
+        .preview-title { text-align: center; color: var(--text-muted); font-size: 1rem; margin-bottom: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        #preview-box { background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.2)), url('https://i.postimg.cc/HsxzZ6mn/image.png') center/cover; padding: 30px 20px; border-radius: 20px; box-shadow: 0 15px 35px rgba(166, 133, 196, 0.2); display: flex; flex-direction: column; gap: 15px; min-height: 350px; border: 4px solid #fff; }
+        #prev-q { border: 4px solid var(--accent-main); border-radius: 15px; padding: 15px 20px; font-size: 1.4rem; font-weight: 700; text-align: center; min-height: 70px; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .prev-a { border: 3px solid var(--border-color); border-radius: 12px; padding: 12px 20px; font-size: 1.2rem; font-weight: 700; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
-        @media (max-width: 1000px) { .main-layout { flex-direction: column; } .right-col { width: 100%; position: static; } }
+        @media (max-width: 1000px) { .main-layout { flex-direction: column; } .right-col { width: 100%; position: static; } h1 { font-size: 1.5rem; } .editor-logo { width: 60px; height: 60px; } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1 id="lbl-title">🛠️ Конструктор Силомера</h1>
+    <div class="editor-header">
+        <img src="https://i.postimg.cc/8zRDCdKF/11_(15).png" class="editor-logo" alt="Логотип Английские ништяки">
+        <h1 id="lbl-title">Конструктор Игры</h1>
+    </div>
 
     <div class="main-layout">
         
@@ -92,9 +122,9 @@
                 </div>
                 <br>
                 <div class="row">
-                    <div class="col"><label id="lbl-color">Цвет текста</label><input type="color" id="cfg-color" value="#2c3e50" oninput="updatePreview()"></div>
+                    <div class="col"><label id="lbl-color">Цвет текста</label><input type="color" id="cfg-color" value="#544961" oninput="updatePreview()"></div>
                     <div class="col"><label id="lbl-bg">Цвет плашек</label><input type="color" id="cfg-bg" value="#ffffff" oninput="updatePreview()"></div>
-                    <div class="col"><label><span id="lbl-opacity">Прозрачность:</span> <span id="opacity-val">95</span>%</label><input type="range" id="cfg-opacity" min="50" max="100" value="95" oninput="document.getElementById('opacity-val').innerText = this.value; updatePreview();"></div>
+                    <div class="col"><label><span id="lbl-opacity">Прозрачность плашек:</span> <span id="opacity-val">95</span>%</label><input type="range" id="cfg-opacity" min="50" max="100" value="95" oninput="document.getElementById('opacity-val').innerText = this.value; updatePreview();"></div>
                 </div>
             </div>
 
@@ -106,14 +136,14 @@
                 </div><br>
                 <div class="form-group"><label id="lbl-start-desc">Описание</label><input type="text" id="t-start-desc"></div>
                 <div class="row">
-                    <div class="col"><label id="lbl-btn-start">СТАРТ</label><input type="text" id="t-btn-start"></div>
-                    <div class="col"><label id="lbl-btn-restart">РЕСТАРТ</label><input type="text" id="t-btn-restart"></div>
-                    <div class="col"><label id="lbl-prog">Вопрос N из M</label><input type="text" id="t-progress"></div>
+                    <div class="col"><label id="lbl-btn-start">Кнопка СТАРТ</label><input type="text" id="t-btn-start"></div>
+                    <div class="col"><label id="lbl-btn-restart">Кнопка РЕСТАРТ</label><input type="text" id="t-btn-restart"></div>
+                    <div class="col"><label id="lbl-prog">Счетчик (Вопрос N из M)</label><input type="text" id="t-progress"></div>
                 </div>
             </div>
 
             <div class="section">
-                <h2 id="lbl-hit-sec">💥 Фидбек на удар</h2>
+                <h2 id="lbl-hit-sec">💥 Фидбек на попадание</h2>
                 <div class="row">
                     <div class="col"><label id="lbl-hit-perf">Идеально</label><input type="text" id="t-hit-perfect"></div>
                     <div class="col"><label id="lbl-hit-good">Отлично</label><input type="text" id="t-hit-good"></div>
@@ -126,8 +156,8 @@
             <div class="section">
                 <h2 id="lbl-fin-sec">🏆 Финальный экран и Ранги</h2>
                 <div class="row">
-                    <div class="col"><label id="lbl-fin-win">Текст Победы</label><input type="text" id="t-fin-win"></div>
-                    <div class="col"><label id="lbl-stat-row">"подряд"</label><input type="text" id="t-stat-row"></div>
+                    <div class="col"><label id="lbl-fin-win">Текст завершения</label><input type="text" id="t-fin-win"></div>
+                    <div class="col"><label id="lbl-stat-row">Приписка "подряд"</label><input type="text" id="t-stat-row"></div>
                 </div><br>
                 <div class="row">
                     <div class="col"><label id="lbl-r1">Ранг 1</label><input type="text" id="t-rank-1"></div>
@@ -145,6 +175,7 @@
 
             <div class="section">
                 <h2 id="lbl-q-sec">❓ Вопросы и ответы</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top:-10px;">При запуске игры варианты ответов будут перемешиваться автоматически.</p>
                 <div id="questions-wrapper"></div>
                 <button class="btn-add" id="btn-add-q" onclick="addQuestion()">+ ДОБАВИТЬ ВОПРОС</button>
             </div>
@@ -152,10 +183,10 @@
             <button class="btn-generate" id="btn-gen" onclick="generateLink()">СГЕНЕРИРОВАТЬ ИГРУ 🚀</button>
 
             <div id="output-area">
-                <h2 style="margin-top:0; color:#27ae60;">✅ Ваша игра готова!</h2>
-                <p><b>Код для вставки в Genially (Insert -> Other -> Iframe):</b></p>
+                <h2 style="margin-top:0;">✅ ИГРА ГОТОВА!</h2>
+                <p style="color: #4e825b;"><b>Код для вставки в Genially (Insert -> Other -> Iframe):</b></p>
                 <textarea id="iframe-code" class="code-box" readonly></textarea>
-                <button class="copy-btn" onclick="copyCode('iframe-code')">📋 Скопировать код Iframe</button>
+                <button class="copy-btn" onclick="copyCode('iframe-code')">📋 Скопировать код</button>
             </div>
         </div>
 
@@ -174,34 +205,33 @@
 </div>
 
 <script>
-    // БАЗА ВСЕХ ПЕРЕВОДОВ
     const i18n = {
         ru: {
-            ui: { title: "🛠️ Конструктор Силомера", langSec: "🌐 Язык и Дизайн", lang: "Язык интерфейса", font: "Шрифт", color: "Цвет текста", bg: "Цвет плашек", opacity: "Прозрачность:", texts: "📝 Игровые тексты (Автозаполнение)", stTitle: "Заголовок", stDesc: "Описание", stHint: "Подсказка", btnStart: "СТАРТ", btnRestart: "РЕСТАРТ", prog: "Вопрос N из M", hit: "💥 Фидбек на удар", hitPerf: "Идеально", hitGood: "Отлично", hitWrong: "Ошибка", hitMiss: "Промах", combo: "КОМБО", fin: "🏆 Финальный экран и Ранги", finWin: "Текст Победы", statRow: "Приписка 'подряд'", r1: "Ранг 1", r2: "Ранг 2", r3: "Ранг 3", r4: "Ранг 4", s1: "Идеально", s2: "Отлично", s3: "Ошибки", s4: "Макс Комбо", qSec: "❓ Вопросы", addQ: "+ ДОБАВИТЬ ВОПРОС", gen: "СГЕНЕРИРОВАТЬ ИГРУ 🚀", del: "Удалить", qPh: "Введите вопрос...", oPh: "Вариант", cAns: "Правильный ответ:", preview: "👁️ Предпросмотр дизайна", prevQ: "Пример вашего вопроса...", prevA: "Вариант" },
+            ui: { title: "Конструктор Игры", langSec: "🌐 Язык и Дизайн", lang: "Язык интерфейса", font: "Шрифт", color: "Цвет текста", bg: "Цвет плашек", opacity: "Прозрачность плашек:", texts: "📝 Игровые тексты (Автозаполнение)", stTitle: "Заголовок", stDesc: "Описание", stHint: "Подсказка", btnStart: "Кнопка СТАРТ", btnRestart: "Кнопка РЕСТАРТ", prog: "Счетчик (Вопрос N из M)", hit: "💥 Фидбек на попадание", hitPerf: "Идеально", hitGood: "Отлично", hitWrong: "Ошибка", hitMiss: "Промах", combo: "КОМБО", fin: "🏆 Финальный экран и Ранги", finWin: "Текст завершения", statRow: "Приписка 'подряд'", r1: "Ранг 1", r2: "Ранг 2", r3: "Ранг 3", r4: "Ранг 4", s1: "Идеально", s2: "Отлично", s3: "Ошибки", s4: "Макс Комбо", qSec: "❓ Вопросы и ответы", addQ: "+ ДОБАВИТЬ ВОПРОС", gen: "СГЕНЕРИРОВАТЬ ИГРУ 🚀", del: "Удалить", qPh: "Введите вопрос...", oPh: "Вариант", cAns: "Правильный ответ:", preview: "👁️ Предпросмотр дизайна", prevQ: "Пример вашего вопроса...", prevA: "Вариант" },
             game: { st: "КАК ИГРАТЬ?", sd: "Золотой лазер быстро бегает вверх и вниз. Нажмите на кнопку (ИЛИ на ПРОБЕЛ), когда лазер окажется ровно на правильном ответе!", sh: "Подсказка: Отвечайте правильно без промахов, чтобы активировать 🔥 КОМБО x2 и x3!", bs: "НАЧАТЬ!", br: "ИГРАТЬ СНОВА", pr: "Вопрос", hp: "ИДЕАЛЬНО!", hg: "ОТЛИЧНО!", hw: "ОШИБКА!", hm: "ПРОМАХ!", cmb: "КОМБО", fw: "ИГРА ЗАВЕРШЕНА", sr: "подряд", r1: "Новичок", r2: "Эксперт", r3: "Мастер силы!", r4: "ЛЕГЕНДА АРКАДЫ!", s1: "Идеально:", s2: "Отлично:", s3: "Ошибки:", s4: "Макс. Комбо:" }
         },
         en: {
-            ui: { title: "🛠️ Arcade Game Maker", langSec: "🌐 Language & Design", lang: "Language", font: "Font", color: "Text Color", bg: "Panel Color", opacity: "Opacity:", texts: "📝 Texts (Auto-fill)", stTitle: "Title", stDesc: "Description", stHint: "Hint", btnStart: "START", btnRestart: "RESTART", prog: "Question N of M", hit: "💥 Hit Feedback", hitPerf: "Perfect", hitGood: "Good", hitWrong: "Wrong", hitMiss: "Miss", combo: "COMBO", fin: "🏆 Final Screen & Ranks", finWin: "Victory Text", statRow: "Suffix 'in a row'", r1: "Rank 1", r2: "Rank 2", r3: "Rank 3", r4: "Rank 4", s1: "Perfect", s2: "Good", s3: "Mistakes", s4: "Max Combo", qSec: "❓ Questions", addQ: "+ ADD QUESTION", gen: "GENERATE GAME 🚀", del: "Delete", qPh: "Enter question...", oPh: "Option", cAns: "Correct answer:", preview: "👁️ Live Preview", prevQ: "Sample question...", prevA: "Option" },
+            ui: { title: "ARCADE MAKER", langSec: "🌐 Language & Design", lang: "Language", font: "Font", color: "Text Color", bg: "Panel Color", opacity: "Panel Opacity:", texts: "📝 Texts (Auto-fill)", stTitle: "Title", stDesc: "Description", stHint: "Hint", btnStart: "START Button", btnRestart: "RESTART Button", prog: "Counter (Question N of M)", hit: "💥 Hit Feedback", hitPerf: "Perfect", hitGood: "Good", hitWrong: "Wrong", hitMiss: "Miss", combo: "COMBO", fin: "🏆 Final Screen & Ranks", finWin: "Victory Text", statRow: "Suffix 'in a row'", r1: "Rank 1", r2: "Rank 2", r3: "Rank 3", r4: "Rank 4", s1: "Perfect", s2: "Good", s3: "Mistakes", s4: "Max Combo", qSec: "❓ Questions & Answers", addQ: "+ ADD QUESTION", gen: "GENERATE GAME 🚀", del: "Delete", qPh: "Enter question...", oPh: "Option", cAns: "Correct answer:", preview: "👁️ Live Preview", prevQ: "Sample question...", prevA: "Option" },
             game: { st: "HOW TO PLAY?", sd: "The golden laser moves fast. Hit the button (OR press SPACE) exactly when the laser is on the correct answer!", sh: "Hint: Answer correctly without missing to activate 🔥 COMBO x2 and x3!", bs: "START!", br: "PLAY AGAIN", pr: "Question", hp: "PERFECT!", hg: "GOOD!", hw: "WRONG!", hm: "MISS!", cmb: "COMBO", fw: "GAME COMPLETED", sr: "in a row", r1: "Beginner", r2: "Expert", r3: "Power Master!", r4: "ARCADE LEGEND!", s1: "Perfect:", s2: "Good:", s3: "Mistakes:", s4: "Max Combo:" }
         },
         es: {
-            ui: { title: "🛠️ Creador de Juegos", langSec: "🌐 Idioma y Diseño", lang: "Idioma", font: "Fuente", color: "Color texto", bg: "Color panel", opacity: "Opacidad:", texts: "📝 Textos (Autocompletar)", stTitle: "Título", stDesc: "Descripción", stHint: "Pista", btnStart: "INICIO", btnRestart: "REINICIAR", prog: "Pregunta N de M", hit: "💥 Feedback", hitPerf: "Perfecto", hitGood: "Bien", hitWrong: "Error", hitMiss: "Fallo", combo: "COMBO", fin: "🏆 Final y Rangos", finWin: "Victoria", statRow: "Sufijo 'seguidos'", r1: "Rango 1", r2: "Rango 2", r3: "Rango 3", r4: "Rango 4", s1: "Perfecto", s2: "Bien", s3: "Errores", s4: "Combo Máx", qSec: "❓ Preguntas", addQ: "+ PREGUNTA", gen: "GENERAR JUEGO 🚀", del: "Eliminar", qPh: "Escribe la pregunta...", oPh: "Opción", cAns: "Respuesta:", preview: "👁️ Vista Previa", prevQ: "Ejemplo de pregunta...", prevA: "Opción" },
+            ui: { title: "CREADOR DE JUEGOS", langSec: "🌐 Idioma y Diseño", lang: "Idioma", font: "Fuente", color: "Color texto", bg: "Color panel", opacity: "Opacidad panel:", texts: "📝 Textos (Autocompletar)", stTitle: "Título", stDesc: "Descripción", stHint: "Pista", btnStart: "Botón INICIO", btnRestart: "Botón REINICIAR", prog: "Contador (Pregunta N de M)", hit: "💥 Feedback de impacto", hitPerf: "Perfecto", hitGood: "Bien", hitWrong: "Error", hitMiss: "Fallo", combo: "COMBO", fin: "🏆 Final y Rangos", finWin: "Texto completado", statRow: "Sufijo 'seguidos'", r1: "Rango 1", r2: "Rango 2", r3: "Rango 3", r4: "Rango 4", s1: "Perfecto", s2: "Bien", s3: "Errores", s4: "Combo Máx", qSec: "❓ Preguntas y respuestas", addQ: "+ PREGUNTA", gen: "GENERAR JUEGO 🚀", del: "Eliminar", qPh: "Escribe la pregunta...", oPh: "Opción", cAns: "Respuesta correcta:", preview: "👁️ Vista Previa", prevQ: "Ejemplo de pregunta...", prevA: "Opción" },
             game: { st: "¿CÓMO JUGAR?", sd: "El láser dorado se mueve rápido. ¡Presiona el botón (O ESPACIO) cuando el láser esté en la respuesta correcta!", sh: "Pista: ¡Responde correctamente sin fallar para activar 🔥 COMBO x2 y x3!", bs: "¡EMPEZAR!", br: "VOLVER A JUGAR", pr: "Pregunta", hp: "¡PERFECTO!", hg: "¡BIEN!", hw: "¡ERROR!", hm: "¡FALLO!", cmb: "COMBO", fw: "JUEGO COMPLETADO", sr: "seguidos", r1: "Principiante", r2: "Experto", r3: "¡Maestro!", r4: "¡LEYENDA!", s1: "Perfecto:", s2: "Bien:", s3: "Errores:", s4: "Combo Máx:" }
         },
         de: {
-            ui: { title: "🛠️ Spiel-Generator", langSec: "🌐 Sprache & Design", lang: "Sprache", font: "Schriftart", color: "Textfarbe", bg: "Panel-Farbe", opacity: "Deckkraft:", texts: "📝 Texte (Autofill)", stTitle: "Titel", stDesc: "Beschreibung", stHint: "Tipp", btnStart: "START", btnRestart: "NEUSTART", prog: "Frage N von M", hit: "💥 Treffer", hitPerf: "Perfekt", hitGood: "Gut", hitWrong: "Falsch", hitMiss: "Daneben", combo: "KOMBO", fin: "🏆 Ränge & Ende", finWin: "Sieg", statRow: "Zusatz 'in Folge'", r1: "Rang 1", r2: "Rang 2", r3: "Rang 3", r4: "Rang 4", s1: "Perfekt", s2: "Gut", s3: "Fehler", s4: "Max Kombo", qSec: "❓ Fragen", addQ: "+ FRAGE", gen: "SPIEL GENERIEREN 🚀", del: "Löschen", qPh: "Frage eingeben...", oPh: "Option", cAns: "Richtige Antwort:", preview: "👁️ Vorschau", prevQ: "Beispielfrage...", prevA: "Option" },
+            ui: { title: "SPIEL-GENERATOR", langSec: "🌐 Sprache & Design", lang: "Sprache", font: "Schriftart", color: "Textfarbe", bg: "Panel-Farbe", opacity: "Deckkraft Panel:", texts: "📝 Texte (Autofill)", stTitle: "Titel", stDesc: "Beschreibung", stHint: "Tipp", btnStart: "START Button", btnRestart: "NEUSTART Button", prog: "Zähler (Frage N von M)", hit: "💥 Treffer Feedback", hitPerf: "Perfekt", hitGood: "Gut", hitWrong: "Falsch", hitMiss: "Daneben", combo: "KOMBO", fin: "🏆 Ränge & Ende", finWin: "Sieg Text", statRow: "Zusatz 'in Folge'", r1: "Rang 1", r2: "Rang 2", r3: "Rang 3", r4: "Rang 4", s1: "Perfekt", s2: "Gut", s3: "Fehler", s4: "Max Kombo", qSec: "❓ Fragen & Antworten", addQ: "+ FRAGE", gen: "SPIEL GENERIEREN 🚀", del: "Löschen", qPh: "Frage eingeben...", oPh: "Option", cAns: "Richtige Antwort:", preview: "👁️ Vorschau", prevQ: "Beispielfrage...", prevA: "Option" },
             game: { st: "WIE SPIELT MAN?", sd: "Der goldene Laser bewegt sich schnell. Drücke den Knopf (ODER LEERTASTE), wenn der Laser auf der richtigen Antwort ist!", sh: "Tipp: Antworte richtig, ohne zu verfehlen, um 🔥 KOMBO x2 und x3 zu aktivieren!", bs: "START!", br: "NOCHMAL SPIELEN", pr: "Frage", hp: "PERFEKT!", hg: "GUT!", hw: "FALSCH!", hm: "DANEBEN!", cmb: "KOMBO", fw: "SPIEL ABGESCHLOSSEN", sr: "in Folge", r1: "Anfänger", r2: "Experte", r3: "Meister!", r4: "LEGENDE!", s1: "Perfekt:", s2: "Gut:", s3: "Fehler:", s4: "Max Kombo:" }
         },
         fr: {
-            ui: { title: "🛠️ Créateur de Jeu", langSec: "🌐 Langue & Design", lang: "Langue", font: "Police", color: "Couleur", bg: "Panneau", opacity: "Opacité:", texts: "📝 Textes (Auto-remplissage)", stTitle: "Titre", stDesc: "Description", stHint: "Astuce", btnStart: "DÉMARRER", btnRestart: "REJOUER", prog: "Question N", hit: "💥 Impact", hitPerf: "Parfait", hitGood: "Bien", hitWrong: "Erreur", hitMiss: "Raté", combo: "COMBO", fin: "🏆 Rangs & Fin", finWin: "Victoire", statRow: "Suffixe 'de suite'", r1: "Rang 1", r2: "Rang 2", r3: "Rang 3", r4: "Rang 4", s1: "Parfait", s2: "Bien", s3: "Erreurs", s4: "Combo Max", qSec: "❓ Questions", addQ: "+ QUESTION", gen: "GÉNÉRER 🚀", del: "Supprimer", qPh: "Entrez la question...", oPh: "Option", cAns: "Bonne réponse:", preview: "👁️ Aperçu", prevQ: "Exemple de question...", prevA: "Option" },
+            ui: { title: "CRÉATEUR DE JEU", langSec: "🌐 Langue & Design", lang: "Langue", font: "Police", color: "Couleur", bg: "Panneau", opacity: "Opacité:", texts: "📝 Textes (Auto-remplissage)", stTitle: "Titre", stDesc: "Description", stHint: "Astuce", btnStart: "DÉMARRER", btnRestart: "REJOUER", prog: "Compteur (Question N)", hit: "💥 Feedback", hitPerf: "Parfait", hitGood: "Bien", hitWrong: "Erreur", hitMiss: "Raté", combo: "COMBO", fin: "🏆 Rangs & Fin", finWin: "Texte de fin", statRow: "Suffixe 'de suite'", r1: "Rang 1", r2: "Rang 2", r3: "Rang 3", r4: "Rang 4", s1: "Parfait", s2: "Bien", s3: "Erreurs", s4: "Combo Max", qSec: "❓ Questions", addQ: "+ QUESTION", gen: "GÉNÉRER 🚀", del: "Supprimer", qPh: "Entrez la question...", oPh: "Option", cAns: "Bonne réponse:", preview: "👁️ Aperçu", prevQ: "Exemple de question...", prevA: "Option" },
             game: { st: "COMMENT JOUER ?", sd: "Le laser doré se déplace rapidement. Appuyez sur le bouton (OU ESPACE) quand le laser est sur la bonne réponse !", sh: "Astuce : Répondez correctement sans rater pour activer 🔥 COMBO x2 et x3 !", bs: "COMMENCER !", br: "REJOUER", pr: "Question", hp: "PARFAIT !", hg: "BIEN !", hw: "ERREUR !", hm: "RATÉ !", cmb: "COMBO", fw: "JEU TERMINÉ", sr: "de suite", r1: "Débutant", r2: "Expert", r3: "Maître !", r4: "LÉGENDE !", s1: "Parfait :", s2: "Bien :", s3: "Erreurs :", s4: "Combo Max :" }
         },
         it: {
-            ui: { title: "🛠️ Creatore di Giochi", langSec: "🌐 Lingua & Design", lang: "Lingua", font: "Carattere", color: "Colore", bg: "Pannello", opacity: "Opacità:", texts: "📝 Testi (Autocompletamento)", stTitle: "Titolo", stDesc: "Descrizione", stHint: "Suggerimento", btnStart: "INIZIA", btnRestart: "RIGIOCA", prog: "Domanda N", hit: "💥 Impatto", hitPerf: "Perfetto", hitGood: "Bene", hitWrong: "Errore", hitMiss: "Mancato", combo: "COMBO", fin: "🏆 Gradi & Fine", finWin: "Vittoria", statRow: "Suffisso 'di fila'", r1: "Grado 1", r2: "Grado 2", r3: "Grado 3", r4: "Grado 4", s1: "Perfetto", s2: "Bene", s3: "Errori", s4: "Combo Max", qSec: "❓ Domande", addQ: "+ DOMANDA", gen: "GENERA 🚀", del: "Elimina", qPh: "Inserisci domanda...", oPh: "Opzione", cAns: "Risposta:", preview: "👁️ Anteprima", prevQ: "Esempio di domanda...", prevA: "Opzione" },
+            ui: { title: "CREATORE DI GIOCHI", langSec: "🌐 Lingua & Design", lang: "Lingua", font: "Carattere", color: "Colore", bg: "Pannello", opacity: "Opacità:", texts: "📝 Testi (Autocompletamento)", stTitle: "Titolo", stDesc: "Descrizione", stHint: "Suggerimento", btnStart: "INIZIA", btnRestart: "RIGIOCA", prog: "Contatore (Domanda N)", hit: "💥 Feedback", hitPerf: "Perfetto", hitGood: "Bene", hitWrong: "Errore", hitMiss: "Mancato", combo: "COMBO", fin: "🏆 Gradi & Fine", finWin: "Testo completato", statRow: "Suffisso 'di fila'", r1: "Grado 1", r2: "Grado 2", r3: "Grado 3", r4: "Grado 4", s1: "Perfetto", s2: "Bene", s3: "Errori", s4: "Combo Max", qSec: "❓ Domande", addQ: "+ DOMANDA", gen: "GENERA 🚀", del: "Elimina", qPh: "Inserisci domanda...", oPh: "Opzione", cAns: "Risposta corretta:", preview: "👁️ Anteprima", prevQ: "Esempio di domanda...", prevA: "Opzione" },
             game: { st: "COME GIOCARE?", sd: "Il laser si muove velocemente. Premi il pulsante (O SPAZIO) quando il laser è sulla risposta corretta!", sh: "Suggerimento: Rispondi correttamente senza sbagliare per attivare 🔥 COMBO x2 e x3!", bs: "INIZIA!", br: "GIOCA ANCORA", pr: "Domanda", hp: "PERFETTO!", hg: "BENE!", hw: "ERRORE!", hm: "MANCATO!", cmb: "COMBO", fw: "GIOCO COMPLETATO", sr: "di fila", r1: "Principiante", r2: "Esperto", r3: "Maestro!", r4: "LEGGENDA!", s1: "Perfetto:", s2: "Bene:", s3: "Errori:", s4: "Combo Max:" }
         },
         zh: {
-            ui: { title: "🛠️ 游戏生成器", langSec: "🌐 语言和设计", lang: "语言", font: "字体", color: "颜色", bg: "面板颜色", opacity: "不透明度:", texts: "📝 文本 (自动填充)", stTitle: "标题", stDesc: "描述", stHint: "提示", btnStart: "开始", btnRestart: "重玩", prog: "第 N 题", hit: "💥 反馈", hitPerf: "完美", hitGood: "不错", hitWrong: "错误", hitMiss: "未命中", combo: "连击", fin: "🏆 排名和结束", finWin: "胜利", statRow: "后缀 '连续'", r1: "排名 1", r2: "排名 2", r3: "排名 3", r4: "排名 4", s1: "完美", s2: "不错", s3: "错误", s4: "最大连击", qSec: "❓ 问题", addQ: "+ 问题", gen: "生成 🚀", del: "删除", qPh: "输入问题...", oPh: "选项", cAns: "答案:", preview: "👁️ 实时预览", prevQ: "示例问题...", prevA: "选项" },
+            ui: { title: "游戏生成器", langSec: "🌐 语言和设计", lang: "语言", font: "字体", color: "颜色", bg: "面板颜色", opacity: "不透明度:", texts: "📝 文本 (自动填充)", stTitle: "标题", stDesc: "描述", stHint: "提示", btnStart: "开始", btnRestart: "重玩", prog: "计数器 (第 N 题)", hit: "💥 反馈", hitPerf: "完美", hitGood: "不错", hitWrong: "错误", hitMiss: "未命中", combo: "连击", fin: "🏆 排名和结束", finWin: "胜利文本", statRow: "后缀 '连续'", r1: "排名 1", r2: "排名 2", r3: "排名 3", r4: "排名 4", s1: "完美", s2: "不错", s3: "错误", s4: "最大连击", qSec: "❓ 问题", addQ: "+ 问题", gen: "生成 🚀", del: "删除", qPh: "输入问题...", oPh: "选项", cAns: "正确答案:", preview: "👁️ 实时预览", prevQ: "示例问题...", prevA: "选项" },
             game: { st: "怎么玩？", sd: "金色激光快速移动。当激光准确指向正确答案时，按下按钮（或空格键）！", sh: "提示：连续正确回答以激活 🔥 连击 x2 和 x3！", bs: "开始！", br: "再玩一次", pr: "问题", hp: "完美！", hg: "不错！", hw: "错误！", hm: "未命中！", cmb: "连击", fw: "游戏完成", sr: "连续", r1: "新手", r2: "专家", r3: "大师！", r4: "传奇！", s1: "完美:", s2: "不错:", s3: "错误:", s4: "最大连击:" }
         }
     };
@@ -209,7 +239,6 @@
     let questionCounter = 0;
     let currentLangData = i18n['ru'].ui; 
 
-    // Вспомогательная функция, чтобы безопасно вставлять текст в любые элементы
     function setText(id, text) {
         const el = document.getElementById(id);
         if (el) {
@@ -224,7 +253,7 @@
         const g = i18n[lang].game;
         currentLangData = u; 
 
-        // 1. Переводим сами подписи (Label) в редакторе
+        // 1. Интерфейс
         setText('lbl-title', u.title); setText('lbl-lang-sec', u.langSec);
         setText('lbl-lang', u.lang); setText('lbl-font', u.font);
         setText('lbl-color', u.color); setText('lbl-bg', u.bg);
@@ -244,7 +273,7 @@
         setText('btn-add-q', u.addQ); setText('btn-gen', u.gen);
         setText('lbl-preview', u.preview);
 
-        // 2. ИДЕАЛЬНОЕ АВТОЗАПОЛНЕНИЕ ПОЛЕЙ (То, что пойдет в игру)
+        // 2. Игровые тексты
         setText('t-start-title', g.st); setText('t-start-desc', g.sd);
         setText('t-start-hint', g.sh); setText('t-btn-start', g.bs);
         setText('t-btn-restart', g.br); setText('t-progress', g.pr);
@@ -257,7 +286,7 @@
         setText('t-stat-2', g.s2); setText('t-stat-3', g.s3);
         setText('t-stat-4', g.s4);
 
-        // 3. Обновляем плейсхолдеры внутри блоков с вопросами
+        // 3. Вопросы
         document.querySelectorAll('.question-block').forEach((b, idx) => {
             b.querySelector('h4').innerText = `${u.qSec.split(' ')[0]} ${idx + 1}`;
             b.querySelector('.remove-btn').innerText = u.del;
